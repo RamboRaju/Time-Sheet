@@ -1,0 +1,123 @@
+<template>
+    
+    <template if:true={showMessage}>
+        <c-messages onclose={closemessagebox} messages={messages} ></c-messages>
+    </template>
+
+    <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered tableBorder">
+        <thead>                  
+            <tr class="slds-line-height_reset">
+                <template if:true={header}>
+                    <template for:each={header} for:item="hr">
+                        <template if:true={hr.isShow}>
+                                <th class="" scope="col" key={hr.Label}>{hr.Label}</th>
+                        </template>
+                    </template>
+                </template>
+            </tr>
+            </thead>
+        <tbody>
+            <template if:true={localsetting.timeEntries}>
+           
+                <template for:each={localsetting.timeEntries} for:item="oneRow">
+                      <tr key={oneRow.key}>     
+                            <template if:false={readOnly}>
+                                <td style="width:5px">
+                                    <button onclick={delEntry}   class="slds-button slds-button_icon slds-button_icon-inverse" title="DEL">
+                                        <lightning-icon icon-name="utility:delete" alternative-text={oneRow.key} size="small"  ></lightning-icon>
+                                    </button>
+                                </td>              
+                            </template> 
+                            <td>
+                                <template if:true={ProjectLabel}>
+                                    <c-lookup  onselectionchange={handleSelectionChange} readonlyrecord={readOnly} lebelhiden={lebelhiden} label={ProjectLabel} 
+                                    placeholder="Search" sobjectname={ProjectApi} currentrecord={oneRow.ProjectId} index={oneRow.key} fieldname="ProjectId"></c-lookup>
+                                </template>
+                            </td>
+                            <template if:false={hideTask}>
+                                <template if:true={oneRow.isTask}>
+                                    <td>
+                                    <template if:true={TaskLabel}>
+                                            <c-lookup  onselectionchange={handleSelectionChange} readonlyrecord={readOnly} lebelhiden={lebelhiden}  label={TaskLabel} 
+                                                placeholder="Search" currentrecord={oneRow.TaskId} parent-record={oneRow.ProjectId} sobjectname={TaskApi} index={oneRow.key} fieldname="TaskId"></c-lookup>
+                                            </template>
+                                    </td>
+                                </template>
+                            </template>
+          
+                                <template for:each={oneRow.TimeEntries} for:item="dates">
+                                    <template if:true={dates.isShow}>
+                                        <td key={dates.EntryDate}>
+                                            <lightning-input type="number" read-only={readOnly} access-key={dates.key} name="" variant="label-hidden" value={dates.Hours} label="" onchange={hourChange}></lightning-input>
+                                        </td>
+                                    </template>                              
+                            </template>
+                        
+                        </tr>
+                </template>
+                <!-- for sub total tr -->
+                <tr key={subTotalRowKey}>
+                    <template if:false={readOnly}>
+                        <template if:false={hideTask}>
+                            <td  colspan ="3" key={subTotalRowKey2}>
+                                <center>
+                                    <b>SUBTOTAL</b>
+                                </center>
+                                 
+                            </td>
+                        </template>
+                        <template if:true={hideTask}>
+                            <td  colspan ="2" key={subTotalRowKey2}>
+                                <center>
+                                    <b>SUBTOTAL</b>
+                                </center>     
+                            </td>
+                        </template>
+                        
+                    </template>
+                    <template if:true={readOnly}>
+                        <template if:false={hideTask}>
+                            <td  colspan ="2" key={subTotalRowKey2}>
+                                <center>
+                                    <b>SUBTOTAL</b>
+                                </center>  
+                            </td>
+                        </template>
+                        <template if:true={hideTask}>
+                            <td  key={subTotalRowKey2}>
+                                <center>
+                                    <b>SUBTOTAL</b>
+                                </center>  
+                            </td>
+                        </template>
+                    </template>
+                    
+                    <!-- <td  key={subTotalRowKey3}></td> -->
+                    <template for:each={myArray} for:item="data">     
+                        <td key={data.key}>
+                            <lightning-input type="number" read-only=true variant="label-hidden"   value={data} ></lightning-input>
+                        </td>                             
+                    </template>
+                </tr>
+            </template>
+        </tbody>
+    </table>
+    <template if:false={readOnly}>
+        <div style="margin-top: 5px;float:left;padding:10px;border: var(--lwc-borderWidthThin,1px) solid var(--lwc-colorBorder,#dddbda)">
+            <button   onclick={addEntry} class="slds-button slds-button_icon slds-button_icon-inverse" title="Add">
+                <lightning-icon icon-name="utility:add" size="small" alternative-text="Add" ></lightning-icon>
+            </button>
+        </div>
+    </template>
+   
+    <div style="margin-top:20px">
+        <template if:true={localsetting.timeEntries}>
+        <center>  
+            <button class="slds-button slds-button_brand"  onclick={cancel}>Cancel</button>
+            <button class="slds-button slds-button_brand" disabled={readOnly}  onclick={save}>Save</button>
+            <lightning-button label="Submit" title="Save and Submit" onclick={submit} class="slds-m-left_x-small"></lightning-button>
+        </center>
+        </template>
+    </div>
+   
+</template>

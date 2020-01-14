@@ -1,0 +1,24 @@
+<template>
+    <div style="background-color:white">
+       <!-- <p>{activeSectionsMessage}</p>-->
+
+        <lightning-accordion allow-multiple-sections-open onsectiontoggle={handleSectionToggle} active-section-name={activeSections}>        
+            <lightning-accordion-section name="A" label="TimeSheet Basic Setting">
+                <p>TimeSheet Basics configurations ,to set WeekStart ,Default Interval</p>
+                <p>Customize the Task ,Make it required or Hide,Manage the label</p>
+                <template if:true={setup}>
+                     <c-basic-setting basesetting={setup}></c-basic-setting>
+                </template>
+            </lightning-accordion-section>
+            <!--
+            <lightning-accordion-section name="B" label="Holiday Setting">
+                <p>Enable Holiday Setting ,and Customize the Setting by choosing other sObject</p>            
+            </lightning-accordion-section>
+
+            <lightning-accordion-section name="C" label="Leave Setting">
+                <p>Enable Leave Setting or Customize the Leave sObject</p>              
+            </lightning-accordion-section> -->
+        </lightning-accordion>
+    </div>
+
+</template>

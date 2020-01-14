@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>EmployeeField__c</fullName>
+    <description>The field hold the Lookup field name for the employee for which the time entry will be done.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>The field hold the Lookup field name for the employee for which the time entry will be done.By default the user will be the employee but some can choose other object.</inlineHelpText>
+    <label>Employee Field</label>
+    <length>100</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>

@@ -1,0 +1,217 @@
+<template>
+    <template if:true={ShowSpinner}>
+        <lightning-spinner alternative-text="Loading" size="large"></lightning-spinner>
+    </template>
+    <template if:true={savedSuccess}>
+            <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_success" role="alert">
+                <h2>
+                    Basic Time Sheet Setting Updated.
+                </h2>
+                <div class="slds-notify__close">
+                    <button  onclick={hideSuccessMess} class="slds-button slds-button_icon slds-button_icon-small slds-button_icon-inverse" title="Close">
+                        <lightning-icon icon-name="utility:close" alternative-text="Close" size="x-small" variant="inverse"></lightning-icon>   
+                    </button>
+                </div>
+            </div>
+    </template>
+    <template if:true={savedError}>
+            <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+                <h2>{dmlerror}
+                </h2>
+                <div class="slds-notify__close">
+                    <button  onclick={hideErrorMess} class="slds-button slds-button_icon slds-button_icon-small slds-button_icon-inverse" title="Close">
+                        <lightning-icon icon-name="utility:close" alternative-text="Close" size="x-small" variant="inverse"></lightning-icon>   
+                    </button>
+                </div>
+            </div>
+    </template>
+
+    <template if:true={BasicSetting}>
+        <center> <lightning-button label="SAVE" onclick={saveBasic} class="slds-m-top_medium"></lightning-button> </center> 
+        <table style="padding:5%">
+            <tr>
+                <td style="width: 5%;">
+                    <span> <c-check-Box onselect={handleSelect} thevalue={BasicSetting.DisableApprovalProcess} name="DisableApprovalProcess"></c-check-Box></span>
+                </td>
+                <td style="width: 45%;">
+                    <span><b>Approval Process </b><br/>Enable/Disable the Approval Process,this this is disabled then you will not be able to 
+                        submit the timeSheet for approval from the gantt.
+                    </span>
+                </td>
+
+                <td style="width: 5%;">  <span> <c-check-Box onselect={handleSelect} thevalue={BasicSetting.DateOnly} name="DateOnly"></c-check-Box></span>
+                </td>
+                <td style="width: 45%;">
+                    <span> <b>Date Only</b><br/>Enable this to show only the date as Label on the gantt.
+                    </span>
+                </td>
+
+                <!--
+                <td style="width: 5%;">  <span> <c-check-Box onselect={handleSelect} thevalue={BasicSetting.DisableOverlap} name="DisableOverlap"></c-check-Box></span>
+                </td>
+                <td style="width: 45%;">
+                    <span> <b>Overlap</b><br/>Disable/Enable Overlapping functionlity.If this is enabled then user will not be able to
+                        enter same time interval for more than one task,for example user will not be able to enter 
+                        10 pm to 11 pm time for more than 1 task.
+                    </span>
+                </td>
+            -->
+            </tr>
+            <tr>
+                <td  style="width: 5%;"> <span> <c-check-Box onselect={handleSelect} thevalue={BasicSetting.DayOnly} name="DayOnly"></c-check-Box></span>
+                </td>
+                <td  style="width: 45%;"><span><b>Day Only</b><br/>Enable to show only Day Name as Label on the gantt.
+                    Example -MONDAY,TUEDAY..
+                </span></td>
+                <td  style="width: 5%;">   <span> <c-check-Box onselect={handleSelect} thevalue={BasicSetting.ShortDaywithDate} name="ShortDaywithDate"></c-check-Box></span>
+                </td>
+                <td  style="width: 45%;"><span> <b>Short Day with Date</b><br/>Enable to show the lable with date and 
+                  day in short format ,Example 11/2/2019 (MON)
+                </span></td>
+            </tr>
+            <!--
+            <tr>
+                <td  style="width: 5%;"> <span> <c-check-Box onselect={handleSelect} thevalue={BasicSetting.HolidayCheck} name="HolidayCheck"></c-check-Box></span>
+                </td>
+                <td  style="width: 45%;"><span><b>Holiday</b><br/>Enable/Disable the Approval Process,this this is disabled then you will not be able to 
+                    submit the timeSheet for approval from the gantt.
+                </span></td>
+                <td  style="width: 5%;">   <span> <c-check-Box onselect={handleSelect} thevalue={BasicSetting.LeaveCheck} name="LeaveCheck"></c-check-Box></span>
+                </td>
+                <td  style="width: 45%;"><span> <b>Leave</b><br/>Disable/Enable Overlapping functionlity.If this is enabled then user will not be able to
+                    enter same time interval for more than one task,for example user will not be able to enter 
+                    10 pm to 11 pm time for more than 1 task.
+                </span></td>
+            </tr>-->
+            <!--
+            <tr>
+                    <td  style="width: 5%;"> <span> <c-check-Box onselect={handleSelect} thevalue={BasicSetting.CustomHoilday} name="CustomHoilday"></c-check-Box></span>
+                    </td>
+                    <td  style="width: 45%;"><span><b>Custom Hoilday</b><br/>Enable/Disable the Approval Process,this this is disabled then you will not be able to 
+                        submit the timeSheet for approval from the gantt.
+                    </span></td>
+                    <td  style="width: 5%;">   <span> <c-check-Box onselect={handleSelect} thevalue={BasicSetting.CustomLeave} name="CustomLeave"></c-check-Box></span>
+                    </td>
+                    <td  style="width: 45%;"><span> <b>Custom Leave</b><br/>Disable/Enable Overlapping functionlity.If this is enabled then user will not be able to
+                        enter same time interval for more than one task,for example user will not be able to enter 
+                        10 pm to 11 pm time for more than 1 task.
+                    </span></td>
+                </tr>
+            -->
+            <tr>
+                <td style="width: 5%;">  <span> <c-check-Box onselect={handleSelect} thevalue={BasicSetting.ShowWeekend} name="ShowWeekend"></c-check-Box></span>
+                </td>
+                <td style="width: 45%;">
+                    <span><b>Show Weekend</b><br/>By default Enable,if disabled then weekends will not Show
+                        one the gantt,The weekends will be decided based on the Week Start selected.
+                    </span>
+                </td>
+                <td style="width: 5%;"> <span> <c-check-Box onselect={handleSelect} thevalue={BasicSetting.TaskRequired} name="TaskRequired"></c-check-Box></span>
+                </td>
+                <td style="width: 45%;">  <span> <b>Task Required</b><br/>By default Enabled ,if disabled then
+                    user can log time without tasks as well,Project is always required.
+                </span></td>
+            </tr>
+        </table> 
+        <table>
+            <tr>
+                <td style="width: 5%;">  <span> <c-check-Box onselect={handleSelect} thevalue={BasicSetting.HideTask} name="HideTask"></c-check-Box></span>
+                </td>
+                <td style="width: 45%;">
+                    <span><b>Hide Task</b><br/>Disabled by default,if Enabled then it will hide the 
+                        task field from the gantt,and task will not be required anymore.
+                    </span>
+                </td>
+                <td style="width: 25%;padding:10px"></td>
+                <td style="width: 25%;padding:10px"></td>
+                <!--
+                <td style="width: 25%;padding:10px">  <lightning-combobox
+                    name="WeekStart"
+                    label="Week Start"
+                    value={BasicSetting.WeekStartDay}
+                    placeholder="Week Start Day"
+                    options={days}
+                    disabled={BasicSetting.trial}
+                    onchange={handleWeekStartChange} ></lightning-combobox>
+                    </td>
+                <td style="width: 25%;padding:10px">  <span> <b>Week Start Day</b><br/>
+                </span></td>-->
+                </tr>                   
+        </table>
+        <!--
+        <template if:true={TimeSheetFields}>
+            <table>
+                <tr>
+                    <td style="width: 25%;padding:10px"> 
+                        <lightning-combobox
+                        name="DefaultInterval"
+                        label="Default Interval"
+                        value={BasicSetting.DefaultInterval}
+                        placeholder="Default Interval"
+                        options={options}
+                        disabled={BasicSetting.trial}
+                        onchange={handleChange} ></lightning-combobox>
+                        
+                    </td>
+                    <td style="width: 25%;padding:10px">                           
+                            <span><b>Default Interval</b> <lightning-helptext content="The Default Interval will render the gantt
+                                either weekly daily or monthly mode."></lightning-helptext><br/>Set the Default Interval,
+                    </span></td>
+                    <td style="width: 25%;padding:10px"> <lightning-combobox
+                        name="ProjectField"
+                        label="Project Field"
+                        value={BasicSetting.ProjectField}
+                        placeholder="Select Project"
+                        options={fields}
+                        disabled={BasicSetting.trial}
+                        onchange={handleProjectChange} ></lightning-combobox>
+                        
+                    </td>
+                    <td style="width: 25%;padding:10px">                   
+                            <span>  
+                        <b>ProjectField</b><lightning-helptext content="The Project object connected to Timesheet.">
+
+                        </lightning-helptext><br/>The reference of the Project sObject 
+                    </span></td>
+                </tr>        
+            </table>
+        </template>-->
+        <!--
+        <template if:true={TimeEntryFields}>
+                <table>
+                    <tr>
+                        <td style="width: 25%;padding:10px"> <lightning-combobox
+                            name="EntryProjectField"
+                            label="Entry Project Field"
+                            value={BasicSetting.EntryProjectField}
+                            placeholder="Select Project Field"
+                            options={Entryfields}
+                            disabled={BasicSetting.trial}
+                            onchange={handleEntryProjectChange} ></lightning-combobox>
+                            
+                        </td>
+                        <td style="width: 25%;padding:10px">                   
+                                <span>  
+                            <b>Entry Project Field</b><lightning-helptext content="The lookup/master detail reference field on Time Entry that
+                            connect to the Project sObject,this is always same as timesheet Project."></lightning-helptext><br/>The reference of the Project sObject
+                        </span></td>
+                        <td style="width: 25%;padding:10px"> <lightning-combobox
+                            name="EntryTaskField"
+                            label="Entry Task Field"
+                            value={BasicSetting.EntryTaskField}
+                            placeholder="Select Task Field"
+                            options={Entryfields}
+                            disabled={BasicSetting.trial}
+                            onchange={handleEntryTaskChange} ></lightning-combobox>
+                            
+                        </td>
+                        <td style="width: 25%;padding:10px">                   
+                                <span>  
+                            <b>Entry Task Field</b><lightning-helptext content="The lookup/master detail reference field on Time Entry for Task sObject"></lightning-helptext><br/>The Reference of the Task sObject
+                        </span></td>
+                    </tr>        
+                </table>
+            </template>  -->    
+            <center> <lightning-button label="SAVE" onclick={saveBasic} class="slds-m-top_medium"></lightning-button> </center>  
+    </template>
+</template>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Project_Field__c</fullName>
+    <description>The Project is to override the Project lookup on TimeSheet, Admin can create lookup on TimeSheet for any sobject and put the field name in the field to use the sobejct as Project.By default TimeSheet-Project is used.</description>
+    <externalId>false</externalId>
+    <inlineHelpText>The Project is to override the Project lookup on TimeSheet, Admin can create lookup on TimeSheet for any sobject and put the field name in the field to use the sobejct as Project.By default TimeSheet-Project is used.</inlineHelpText>
+    <label>Project Field</label>
+    <length>100</length>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>false</unique>
+</CustomField>
