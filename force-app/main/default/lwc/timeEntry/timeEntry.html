@@ -30,17 +30,28 @@
                             </template> 
                             <td>
                                 <template if:true={ProjectLabel}>
-                                    <c-lookup  onselectionchange={handleSelectionChange} readonlyrecord={readOnly} lebelhiden={lebelhiden} label={ProjectLabel} 
-                                    placeholder="Search" sobjectname={ProjectApi} currentrecord={oneRow.ProjectId} index={oneRow.key} fieldname="ProjectId"></c-lookup>
+                                    <template if:true ={isPicklist}>
+                                         <c-dep-picklist onpicklistselection={handlePicklistSeletion} currentrecord={oneRow.ProjectId} lebelhiden={lebelhiden} label={ProjectLabel}  sobjectname={ProjectApi} index={oneRow.key} fieldname="ProjectId"></c-dep-picklist>     
+                                    </template>
+                                    <template if:false ={isPicklist}>
+                                        <c-lookup  onselectionchange={handleSelectionChange} readonlyrecord={readOnly} lebelhiden={lebelhiden} label={ProjectLabel} 
+                                            placeholder="Search" sobjectname={ProjectApi} currentrecord={oneRow.ProjectId} index={oneRow.key} fieldname="ProjectId"></c-lookup>
+                                    </template> 
                                 </template>
                             </td>
                             <template if:false={hideTask}>
                                 <template if:true={oneRow.isTask}>
                                     <td>
-                                    <template if:true={TaskLabel}>
-                                            <c-lookup  onselectionchange={handleSelectionChange} readonlyrecord={readOnly} lebelhiden={lebelhiden}  label={TaskLabel} 
-                                                placeholder="Search" currentrecord={oneRow.TaskId} parent-record={oneRow.ProjectId} sobjectname={TaskApi} index={oneRow.key} fieldname="TaskId"></c-lookup>
+                                        <template if:true={TaskLabel}>
+                                            <template if:true ={isPicklist}>
+                                                <c-dep-picklist onpicklistselection={handlePicklistSeletion} currentrecord={oneRow.TaskId} parent-record={oneRow.ProjectId} sobjectname={TaskApi} index={oneRow.key} fieldname="TaskId"></c-dep-picklist>
                                             </template>
+                                            <template if:false ={isPicklist}>
+                                                <c-lookup  onselectionchange={handleSelectionChange} readonlyrecord={readOnly} lebelhiden={lebelhiden}  label={TaskLabel} 
+                                                    placeholder="Search" currentrecord={oneRow.TaskId} parent-record={oneRow.ProjectId} sobjectname={TaskApi} index={oneRow.key} fieldname="TaskId"></c-lookup>
+                                            </template>
+                                                
+                                        </template>
                                     </td>
                                 </template>
                             </template>

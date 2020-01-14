@@ -25,12 +25,14 @@ export default class TimeEntry extends LightningElement {
     @track readOnly;
     @track hideTask=false;
     @track myArray = [];
+    @track isPicklist;
 
     connectedCallback() {  
         console.log('********');
         if(this.basicsetting){         
             this.hideTask= this.basicsetting.HideTask;
             this.readOnly=this.basicsetting.readOnly;
+            this.isPicklist = this.basicsetting.isPicklist;
             this.localsetting=this.basicsetting.constructor();
 
             for (let attr in this.basicsetting) {
@@ -208,6 +210,43 @@ export default class TimeEntry extends LightningElement {
         });
     }
 
+    handlePicklistSeletion(event){
+        let index=event.target.getIndex();
+        const selection = event.target.getSelection();
+        let fieldName=event.target.getFieldName();
+        
+        if(fieldName && selection!==undefined && index!==undefined){
+            let allEntr=this.localsetting.timeEntries;
+            let oneEntry;
+            for(let i=0;i<allEntr.length;i++){
+                if(allEntr[i].key===index){
+                    oneEntry=allEntr[i]
+                }
+            }
+            if(oneEntry && selection!==undefined && selection!=='' ){
+                oneEntry[fieldName]=selection.id;
+            }else{
+                oneEntry[fieldName]='';
+            }
+
+            if(fieldName==='ProjectId' && selection!==undefined && selection!==''){
+                oneEntry.TaskId='';
+                let lookups=this.template.querySelectorAll('c-dep-picklist');
+                for(let i=0;i<lookups.length;i++){
+                    let theFieldName=lookups[i].getFieldName();
+                    let theTaskIndex=lookups[i].getIndex();
+                    if(theFieldName==='TaskId' && index===theTaskIndex){
+                        lookups[i].resetSelection();
+                    }
+                }               
+            }
+        }
+
+        // console.log(JSON.stringify(selection));
+        // console.log(JSON.stringify(this.localsetting.timeEntries));
+        
+    }
+
     delEntry(event){
         let currentIndex=event.target.alternativeText;
         console.log('*****');
@@ -243,6 +282,7 @@ export default class TimeEntry extends LightningElement {
             this.basicsetting=value;     
             this.hideTask= this.basicsetting.HideTask;
             this.readOnly=this.basicsetting.readOnly; 
+            this.isPicklist = this.basicsetting.isPicklist 
             this.localsetting=this.basicsetting.constructor();
             for (let attr in this.basicsetting) {
                 if (this.basicsetting.hasOwnProperty(attr) && attr!=='timeEntries'){
@@ -287,22 +327,40 @@ export default class TimeEntry extends LightningElement {
             this.TaskLabel=this.basicsetting.EntryTaskObjectLabel;   
             
             if(this.basicsetting.reset===false){
-                let lookups=this.template.querySelectorAll('c-lookup');
+                let lookups;
+                if(!this.isPicklist){
+                    lookups=this.template.querySelectorAll('c-lookup');
+                }else{
+                    lookups=this.template.querySelectorAll('c-dep-picklist');
+                }
+                
                 for(let i=0;i<lookups.length;i++){
                     lookups[i].resetSelection();
                 }       
-            }else{             
-                let lookups=this.template.querySelectorAll('c-lookup');
+            }else{   
+                        
+                let lookups;
+                if(!this.isPicklist){
+                    lookups=this.template.querySelectorAll('c-lookup');
+                }else{
+                    
+                    lookups=this.template.querySelectorAll('c-dep-picklist');
+                }
                 for(let i=0;i<lookups.length;i++){
                     let key=lookups[i].getIndex();                  
                     let selectedItem = this.localsetting.timeEntries.filter(
                         result => result.key === key
                     );
                     let fieldName=lookups[i].getFieldName();
-                    if(fieldName==='ProjectId')
+                    if(fieldName==='ProjectId'){
+                      
                         lookups[i].setSelection(selectedItem[0].ProjectId);
-                    else
+                    }
+                    else{
+                        
                         lookups[i].setSelection(selectedItem[0].TaskId);
+                    }
+                
                 }     
             }
         }
