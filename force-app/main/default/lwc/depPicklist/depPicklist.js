@@ -26,6 +26,7 @@ export default class DepPicklist extends LightningElement {
     leftIcon = '';
     readOnly = true;
    connectedCallback(){
+       console.log('hello from connected coll back of dep picklist');
         this.rightIcon = 'utility:down';
         if(this.currentrecord!=='' && this.currentrecord!==undefined){
             apexDefault({recordId:this.currentrecord,sObjectName:this.sobjectname})
@@ -78,6 +79,7 @@ export default class DepPicklist extends LightningElement {
         else 
         this.showhide = true;
         // Save selection
+        console.log('this.picklistResults '+this.picklistResults);
         let selectedItem = this.picklistResults.filter(
             result => result.id === recordId
         );
@@ -133,7 +135,7 @@ export default class DepPicklist extends LightningElement {
                 }
                 else{
                     this.showhide = false;
-                    getListboxClass();
+                    //getListboxClass();
                 }
                
             },200
@@ -154,9 +156,13 @@ export default class DepPicklist extends LightningElement {
         this.showhide = false;
         else 
         this.showhide = true;
-        console.log('sObjectName '+sObjectName);
+        console.log('this.sobjectname '+this.sobjectname);
+        console.log('this.parentRecord '+this.parentRecord);
+        console.log('picklistResults '+this.picklistResults);
+        //this.picklistResults = [];
         picklistValue({sObjectName:this.sobjectname,parentRecord:this.parentRecord})
        .then(results => {
+           console.log(results);
            this.setPicklistResults(results); 
        })
        .catch(error => {

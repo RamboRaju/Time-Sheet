@@ -58,7 +58,7 @@ public class LookupController extends DescribeSObject{
         string query='select id,'+detail.NameField+' from '+sObjectName;
         
         if(fieldName!=null && fieldName.trim()!=''){
-            query+=' and '+fieldName+'=:parentRecord ';
+            query+=' where '+fieldName+'=:parentRecord ';
         }
         
         //query+='limit:MAX_RESULTS';
