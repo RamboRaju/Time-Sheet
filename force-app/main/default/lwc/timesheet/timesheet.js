@@ -64,6 +64,8 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
 
             console.log('the final result');
             console.log(result);
+            console.log('this dot basic setting');
+            console.log(this.basicSetting);
             if(this.TimeSheetFields!==undefined){
                 let allFields=this.TimeSheetFields.fields;              
                 for (let attr in allFields) {
@@ -72,10 +74,7 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
                         if(theField.dataType === "Reference" && theField.custom===true && theField.apiName===this.EmployeeField){
                             this.EmployeeFieldObject=theField.referenceToInfos[0].apiName;
                             this.EmployeeFieldObjLabel=theField.label; 
-                            console.log(this.EmployeeFieldObject);
-                            console.log('Hello');      
                             this.basicSetting.EmployeeFieldObject=this.EmployeeFieldObject; 
-                            console.log('Hello main chal gaya');
                             this.basicSetting.EmployeeFieldObjectLabel=this.EmployeeFieldObjLabel;          
                         }  
                     }
@@ -83,7 +82,6 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
             }
 
             if(this.TimeEntryFields!==undefined){
-                // console.log('from connected call back '+this.basicSetting.EntryProjectObjectLabel);
                 let allFields=this.TimeEntryFields.fields;              
                 for (let attr in allFields) {
                     if(allFields.hasOwnProperty(attr)){                       
@@ -91,7 +89,6 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
                         if(theField.dataType === "Reference" && theField.custom===true && theField.apiName===this.basicSetting.EntryProjectField){
                             this.basicSetting.EntryProjectObject=theField.referenceToInfos[0].apiName;
                             this.basicSetting.EntryProjectObjectLabel=theField.label; 
-                            // console.log('from connected call back '+this.basicSetting.EntryProjectObjectLabel);
                         }
                         if(theField.dataType === "Reference" && theField.custom===true && theField.apiName===this.basicSetting.EntryTaskField){
                             this.basicSetting.EntryTaskObject=theField.referenceToInfos[0].apiName;
@@ -109,7 +106,6 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
     
     @wire(getObjectInfo, { objectApiName: TimeSheet})
     wiredFields({ error, data }) {
-        console.log('in wire method');
         if (data) {                  
             this.TimeSheetFields = data;
             this.error = undefined;
@@ -142,9 +138,7 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
         if (data) {                  
             this.TimeEntryFields = data;
             this.error = undefined;
-            //console.log('from wire method '+this.basicSetting.EntryProjectObjectLabel);
             if(this.basicSetting!==undefined){
-                // console.log('from wire method '+this.basicSetting.EntryProjectObjectLabel);
                 let allFields=this.TimeEntryFields.fields;              
                 for (let attr in allFields) {
                     if(allFields.hasOwnProperty(attr)){
@@ -153,7 +147,6 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
                         if(theField.dataType === "Reference" && theField.custom===true && theField.apiName===this.basicSetting.EntryProjectField){
                             this.basicSetting.EntryProjectObject=theField.referenceToInfos[0].apiName;
                             this.basicSetting.EntryProjectObjectLabel=theField.label; 
-                            // console.log('from wire method '+this.basicSetting.EntryProjectObjectLabel);
                             }
                       
                         if(theField.dataType === "Reference" && theField.custom===true && theField.apiName===this.basicSetting.EntryTaskField){
