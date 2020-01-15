@@ -276,9 +276,10 @@ export default class TimeEntry extends LightningElement {
     }
   
     @api 
-    baseset(value) {   
+    baseset(value) {  
+        console.log('inside baseset'); 
+        console.log(value); 
         if(value){     
-           
             this.basicsetting=value;     
             this.hideTask= this.basicsetting.HideTask;
             this.readOnly=this.basicsetting.readOnly; 

@@ -96,12 +96,12 @@ public virtual class BaseSettingService {
             sst.DisableApprovalProcess=false;
             sst.DisableOverlap=true;
             sst.EmployeeField='Employee__c';
-            sst.EntryProjectField='Project__c';
+            sst.EntryProjectField='Assignment__c';
             sst.EntryTaskField='Task__c';
             sst.HideTask=false;
             sst.HolidayCheck=false;
             sst.LeaveCheck=true;   
-            sst.ProjectField='Project__c';
+            sst.ProjectField='Assignment__c';
             sst.ShowWeekend=true;
             sst.TaskRequired=true;
             sst.WeekStartDay='SUNDAY'; 

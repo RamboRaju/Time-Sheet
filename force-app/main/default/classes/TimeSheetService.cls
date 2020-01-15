@@ -95,7 +95,7 @@ public virtual class TimeSheetService extends BaseSettingService{
                             teDm.Is_Show__c=te.isShow;
                             teDm.Date__c=te.EntryDate;
                             teDm.Hours__c=te.hours;
-                            teDm.Project__c=ProjectId;
+                            teDm.Assignment__c=ProjectId;
                             if(TaskId!=null && TaskId.trim()!='')
                                 teDm.Task__c=TaskId;
                             else{
@@ -216,10 +216,33 @@ public virtual class TimeSheetService extends BaseSettingService{
             dr.EndDate=weekStart.adddays(7);    
         }
         return dr;
-    }   
+    }
+    
+     // return duplicate time sheet 
+    public Result getDuplicateTimeSheet(string baseSettingStr){
+        Result rs1 = new Result();
+        Result rs=(Result)JSON.deserialize(baseSettingStr, Result.class);
+        System.debug('Result==== '+rs.StartDate);
+        List<TimeSheet__c> timeSheetList = new List<TimeSheet__c>();
+        timeSheetList = [Select id, name,Start_Date__c,End_Date__c from TimeSheet__c where Start_Date__c  <=:rs.StartDate And End_Date__c  >= :rs.StartDate limit 1];
+        System.debug('timeSheetList '+timeSheetList);
+        if(timeSheetList.size() > 0){
+            rs1 = getBasicSetting(timeSheetList[0].id);
+            System.debug('inside if block '+rs1);
+            if(getApprovalStatus(timeSheetList[0].id)){
+                 rs1.readOnly = true;
+            }
+            return rs1;
+        }
+        
+        return null;
+    }
     
     public Result getUpdateBasicSetting(string baseSettingStr){
         Result rs=(Result)JSON.deserialize(baseSettingStr, Result.class);
+         if(getDuplicateTimeSheet(baseSettingStr) != null ){
+            return getDuplicateTimeSheet(baseSettingStr);
+        }
         if(rs!=null){
             rs.reset=false;
             DateRanges  dr=getValidDate(rs.StartDate,rs.DateLabel,rs.WeekStartDay);
@@ -251,6 +274,21 @@ public virtual class TimeSheetService extends BaseSettingService{
         }
         return rs;
     }
+     // open in edit mode after submit
+    public Boolean getApprovalStatus(string recordId){
+        Boolean approvalProcessStatus = false;
+        List<ProcessInstance> processInstanceList =[SELECT Id, Status, TargetObject.Name FROM ProcessInstance WHERE TargetObjectId=:recordId];
+        if(processInstanceList.size() > 0){
+            for(ProcessInstance pi : processInstanceList){
+                if(pi.Status== 'Submitted' || pi.Status== 'Pending' || pi.Status== 'Approved'){
+                    approvalProcessStatus = True;
+                }
+        	}
+        }
+        
+        return approvalProcessStatus;
+
+    }
     //GET THE BASIC SETTING
     
     public Result getBasicSetting(string recordId){
@@ -261,7 +299,12 @@ public virtual class TimeSheetService extends BaseSettingService{
         
         rs.Recordid=recordId;
         rs.Name='';
-        rs.readOnly=false;
+         if(getApprovalStatus(recordId)){
+            rs.readOnly = true;
+        }else{
+            rs.readOnly=false;
+        }
+        //rs.readOnly=false;
         
         if(recordId!=null && recordId!=''){
             set<string> fields=Utility.getFields('TimeSheet__c');
@@ -340,6 +383,12 @@ public virtual class TimeSheetService extends BaseSettingService{
         rs.EntryTaskField=BaseSetting.EntryTaskField;
         
         //GET SOBJECT FOR THE REFERENCE LOOKUP ON THE CLIENT SITE
+      		rs.EntryProjectObject = 'Assignment__c';
+            rs.EntryProjectObjectLabel = 'Assignment';
+            rs.EntryTaskObject = 'Task__c';
+            rs.EntryTaskObjectLabel = 'Task';
+            rs.EmployeeFieldObject = 'User';
+            rs.EmployeeFieldObjectLabel = 'User';
         
         //CREATE THE HEADERS
         list<OneCol> Headers=new list<OneCol>();    
@@ -353,7 +402,7 @@ public virtual class TimeSheetService extends BaseSettingService{
     public list<TimeEntryRow> getOldEntry(string RecordId,boolean isTask,boolean readOnly){
         
         list<TimeEntryRow>  allRows=new list<TimeEntryRow> ();
-        list<Time_Entry__c> TEs=[select id,Date__c,Hours__c,Is_Show__c,Project__c,Task__c,TimeSheet__c,Row__c
+        list<Time_Entry__c> TEs=[select id,Date__c,Hours__c,Is_Show__c,Project__c,Assignment__c,Task__c,TimeSheet__c,Row__c
         from Time_Entry__c where TimeSheet__c=:RecordId order by Row__c,Date__c asc];
         
         map<integer,list<Time_Entry__c>> keyEntryMap=new map<integer,list<Time_Entry__c>>();
@@ -361,7 +410,7 @@ public virtual class TimeSheetService extends BaseSettingService{
         map<integer,string> keyTaskId=new map<integer,string>();
         
         for(Time_Entry__c te:TEs){
-            string ProjectId=te.Project__c;
+            string ProjectId=te.Assignment__c;
             string TaskId=te.Task__c!=null?te.Task__c:null;
                        
             integer key=integer.valueof(te.Row__c);
@@ -414,7 +463,7 @@ public virtual class TimeSheetService extends BaseSettingService{
     public list<TimeEntryRow> getOldEntrySet(string RecordId,boolean isTask,date currentDate){
         
         list<TimeEntryRow>  allRows=new list<TimeEntryRow> ();
-        list<Time_Entry__c> TEs=[select id,Date__c,Hours__c,Is_Show__c,Project__c,Task__c,TimeSheet__c,Row__c
+        list<Time_Entry__c> TEs=[select id,Date__c,Hours__c,Is_Show__c,Project__c,Assignment__c,Task__c,TimeSheet__c,Row__c
         from Time_Entry__c where TimeSheet__c=:RecordId  and TimeSheet__r.Start_Date__c=:currentDate order by Row__c,Date__c asc];
         
         map<integer,list<Time_Entry__c>> keyEntryMap=new map<integer,list<Time_Entry__c>>();
@@ -520,7 +569,7 @@ public virtual class TimeSheetService extends BaseSettingService{
         }
         
         OneCol ocProject =new OneCol();
-        ocProject.label='Project';
+        ocProject.label='Assignment';
         ocProject.isDate=false;
         Headers.add(ocProject);
         
@@ -556,6 +605,12 @@ public virtual class TimeSheetService extends BaseSettingService{
         
         public Result(){
             isPicklist=true;
+            EntryProjectObject = '';
+            EntryProjectObjectLabel = '';
+            EntryTaskObject = '';
+            EntryTaskObjectLabel = '';
+            EmployeeFieldObject = '';
+            EmployeeFieldObjectLabel = '';
         }
         
         @auraEnabled
@@ -586,9 +641,9 @@ public virtual class TimeSheetService extends BaseSettingService{
         @auraEnabled
         public string EmployeeField;
         @auraEnabled
-        public string EmployeeFieldObject;
+        public string EmployeeFieldObject{get;set;}
         @auraEnabled
-        public string EmployeeFieldObjectLabel;
+        public string EmployeeFieldObjectLabel{get;set;}
         
         
         @auraEnabled

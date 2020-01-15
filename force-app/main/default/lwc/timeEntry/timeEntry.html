@@ -31,7 +31,7 @@
                             <td>
                                 <template if:true={ProjectLabel}>
                                     <template if:true ={isPicklist}>
-                                         <c-dep-picklist onpicklistselection={handlePicklistSeletion} currentrecord={oneRow.ProjectId} lebelhiden={lebelhiden} label={ProjectLabel}  sobjectname={ProjectApi} index={oneRow.key} fieldname="ProjectId"></c-dep-picklist>     
+                                         <c-dep-picklist onpicklistselection={handlePicklistSeletion} readonlyrecord={readOnly} currentrecord={oneRow.ProjectId} lebelhiden={lebelhiden} label={ProjectLabel}  sobjectname={ProjectApi} index={oneRow.key} fieldname="ProjectId"></c-dep-picklist>     
                                     </template>
                                     <template if:false ={isPicklist}>
                                         <c-lookup  onselectionchange={handleSelectionChange} readonlyrecord={readOnly} lebelhiden={lebelhiden} label={ProjectLabel} 
@@ -44,7 +44,7 @@
                                     <td>
                                         <template if:true={TaskLabel}>
                                             <template if:true ={isPicklist}>
-                                                <c-dep-picklist onpicklistselection={handlePicklistSeletion} currentrecord={oneRow.TaskId} parent-record={oneRow.ProjectId} sobjectname={TaskApi} index={oneRow.key} fieldname="TaskId"></c-dep-picklist>
+                                                <c-dep-picklist onpicklistselection={handlePicklistSeletion} readonlyrecord={readOnly} currentrecord={oneRow.TaskId} parent-record={oneRow.ProjectId} sobjectname={TaskApi} index={oneRow.key} fieldname="TaskId"></c-dep-picklist>
                                             </template>
                                             <template if:false ={isPicklist}>
                                                 <c-lookup  onselectionchange={handleSelectionChange} readonlyrecord={readOnly} lebelhiden={lebelhiden}  label={TaskLabel} 

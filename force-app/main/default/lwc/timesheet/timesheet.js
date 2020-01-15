@@ -64,8 +64,6 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
 
             console.log('the final result');
             console.log(result);
-            console.log('this dot basic setting');
-            console.log(this.basicSetting);
             if(this.TimeSheetFields!==undefined){
                 let allFields=this.TimeSheetFields.fields;              
                 for (let attr in allFields) {
@@ -193,6 +191,7 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
     }
 
     handleNameChange(event){
+        console.log('Name change handler')
         const selection = event.target.value;
         this.Name=selection;
         this.basicSetting.Name=selection;
@@ -219,14 +218,25 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
            .then(result => {
                console.log(result);
                if(result!==undefined){    
-                  let cloneResult = this.cloneUpdateBasicSetting(result);          
+                  let cloneResult = this.cloneUpdateBasicSetting(result); 
+                  console.log('cloneResult'); 
+                  console.log(cloneResult);        
                   this.StartDate=cloneResult.StartDate;
                   this.basicSetting=cloneResult;
+                  this.Name = cloneResult.Name;
+                  console.log('Besic setting data ');
+                  console.log(this.basicSetting);
                   this.spinner=undefined;
-                  if(actualDate!==this.StartDate){
-                      console.log('************date changed');
-                    this.template.querySelector('c-time-entry').baseset(cloneResult);
-                  }
+                //   if(actualDate!==this.StartDate){
+                //       console.log('************date changed');
+                //     this.template.querySelector('c-time-entry').baseset(cloneResult);
+                //   }
+                console.log('cloneResult.RecordId')
+                console.log(this.basicSetting.Recordid);
+                  if(this.basicSetting.Recordid !== undefined){
+                    console.log('************date changed');
+                  this.template.querySelector('c-time-entry').baseset(cloneResult);
+                }
                     
                }
            })
