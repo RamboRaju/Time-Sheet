@@ -1,0 +1,4 @@
+.slds-dropdown_fluid, .slds-dropdown--fluid {
+     /* min-width: var(--lwc-sizeXSmall,12rem); */
+     min-width: auto;
+}

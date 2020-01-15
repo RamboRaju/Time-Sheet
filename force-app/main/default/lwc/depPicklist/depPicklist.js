@@ -69,6 +69,8 @@ export default class DepPicklist extends LightningElement {
             }
             return result;
         });
+       
+
     }
 
     handleResultClick(event) {
@@ -152,23 +154,21 @@ export default class DepPicklist extends LightningElement {
     }
 
     showDropDown(){    
-        if(this.showhide === true)
-        this.showhide = false;
-        else 
-        this.showhide = true;
-        console.log('this.sobjectname '+this.sobjectname);
-        console.log('this.parentRecord '+this.parentRecord);
-        console.log('picklistResults '+this.picklistResults);
-        //this.picklistResults = [];
+       
+        this.picklistResults = [];
         picklistValue({sObjectName:this.sobjectname,parentRecord:this.parentRecord})
        .then(results => {
-           console.log(results);
            this.setPicklistResults(results); 
+           if(this.showhide === true)
+           this.showhide = false;
+           else 
+           this.showhide = true;
        })
        .catch(error => {
            // TODO: handle error
            this.errors.push(error);
        });
+       
     }
 
     get getInputValue() {
