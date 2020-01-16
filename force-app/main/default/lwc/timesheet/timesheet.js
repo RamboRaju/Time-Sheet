@@ -43,6 +43,8 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
     @track messages=[];
     @track userSetup=false;
     @track EmployeeReadOnly=true;
+    @track ApprovalMessage = [];;
+    @track isApprovalMessage;
 
     connectedCallback() {   
         if(this.recordId!==undefined && this.recordId!=='')
@@ -61,7 +63,13 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
             this.EmployeeField=result.EmployeeField;
             this.EntryProjectField=result.EntryProjectField;
             this.EntryTaskField=result.EntryTaskField;
-
+            
+            if(result.ApprovalMessage !== ''){
+                this.isApprovalMessage = true;
+                this.ApprovalMessage.push(result.ApprovalMessage);
+            }
+            
+            console.log('Hello '+result.ApprovalMessage);
             console.log('the final result');
             console.log(result);
             if(this.TimeSheetFields!==undefined){

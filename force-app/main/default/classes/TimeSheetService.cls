@@ -229,7 +229,7 @@ public virtual class TimeSheetService extends BaseSettingService{
         if(timeSheetList.size() > 0){
             rs1 = getBasicSetting(timeSheetList[0].id);
             System.debug('inside if block '+rs1);
-            if(getApprovalStatus(timeSheetList[0].id)){
+            if(getApprovalStatus(timeSheetList[0].id).size() > 1){
                  rs1.readOnly = true;
             }
             return rs1;
@@ -275,43 +275,28 @@ public virtual class TimeSheetService extends BaseSettingService{
         return rs;
     }
      // open in edit mode after submit
-    public Boolean getApprovalStatus(string recordId){
+    public List<String> getApprovalStatus(string recordId){
         Boolean approvalProcessStatus = false;
+        List<String> myList = new List<String>();
         List<ProcessInstance> processInstanceList =[SELECT Id, Status, TargetObject.Name FROM ProcessInstance WHERE TargetObjectId=:recordId];
         if(processInstanceList.size() > 0){
             for(ProcessInstance pi : processInstanceList){
                 if(pi.Status== 'Submitted' || pi.Status== 'Pending' || pi.Status== 'Approved'){
-                    approvalProcessStatus = True;
+                    myList.add('true');
+                    myList.add(pi.Status);
+                    approvalProcessStatus = true;
                 }
         	}
         }
         
-        return approvalProcessStatus;
+        return myList;
 
     }
     //GET THE BASIC SETTING
     
     public Result getBasicSetting(string recordId){
-        
+        System.debug('Hello i am in get basic setting');
         Result rs=new Result();
-        
-        TimeSheet__c timeSheet=new TimeSheet__c();
-        
-        rs.Recordid=recordId;
-        rs.Name='';
-         if(getApprovalStatus(recordId)){
-            rs.readOnly = true;
-        }else{
-            rs.readOnly=false;
-        }
-        //rs.readOnly=false;
-        
-        if(recordId!=null && recordId!=''){
-            set<string> fields=Utility.getFields('TimeSheet__c');
-            string query=Utility.createQuery(fields,'TimeSheet__c');
-            query+=' where id=:recordId';
-            timeSheet=database.query(query);                 
-        }
         
         Setting  BaseSetting=getTimeSheetSetting();
         
@@ -324,6 +309,49 @@ public virtual class TimeSheetService extends BaseSettingService{
             rs.EndDate=weekStart.adddays(7);    
         }
         
+        //if recordidnull 
+        System.debug('recordId '+recordId);
+        if(recordId==null){
+            List<TimeSheet__c> timeSheetList = new List<TimeSheet__c>();
+            System.debug('rs.StartDate '+rs.StartDate);
+            timeSheetList = [Select id, name,Start_Date__c,End_Date__c from TimeSheet__c where Start_Date__c=:rs.StartDate And End_Date__c  >= :rs.EndDate limit 1];
+            System.debug('timeSheetList '+timeSheetList);
+            if(timeSheetList.size() > 0){
+                rs.Recordid = timeSheetList[0].id;
+            }   
+        }else{
+             rs.Recordid=recordId;
+        }
+        
+        System.debug('rs.Recordid '+rs.Recordid);
+        TimeSheet__c timeSheet=new TimeSheet__c();
+        
+       // rs.Recordid=recordId;
+        rs.Name='';
+        rs.readOnly=false;
+        if(recordId!=null && recordId!=''){
+            List<String> myList = new List<String>();
+            myList = getApprovalStatus(recordId);
+            if(myList.size() > 1){
+                rs.readOnly = true;
+                rs.ApprovalMessage = 'This record is currently in an approval process. A record can be in only one approval process at a time, Status : ' +myList.get(1);
+            }
+        }
+        
+        
+        //rs.readOnly=false;
+        
+        if(rs.Recordid!=null && rs.Recordid!=''){
+            String tId = rs.Recordid;
+            System.debug('tId+++ '+tId);
+            set<string> fields=Utility.getFields('TimeSheet__c');
+            string query=Utility.createQuery(fields,'TimeSheet__c');
+            query+=' where id=:tId';
+            timeSheet=database.query(query);  
+            System.debug('timeSheet+++ '+timeSheet);
+        }
+        
+       
         //THE BASIC SETTINGS
         rs.HideTask=BaseSetting.HideTask;
         rs.showweekend=BaseSetting.ShowWeekend;
@@ -339,7 +367,7 @@ public virtual class TimeSheetService extends BaseSettingService{
         
         //IF EDIT THEN GET DATA FROM RECORD
         
-        if(recordId!=null && recordId!=''){
+        if(rs.Recordid!=null && rs.Recordid!=''){
             rs.StartDate=timeSheet.Start_Date__c;
             rs.EndDate=timeSheet.End_Date__c;
             rs.SelectedEmp=(string)timeSheet.get(BaseSetting.EmployeeField);
@@ -361,8 +389,8 @@ public virtual class TimeSheetService extends BaseSettingService{
         //GET THE ENTRIES
         list<TimeEntryRow> allEntries=new list<TimeEntryRow>();
         
-        if(recordId!=null && recordId!=''){
-            allEntries=getOldEntry(recordId,rs.HideTask,rs.readOnly);               
+        if(rs.Recordid!=null && rs.Recordid!=''){
+            allEntries=getOldEntry(rs.Recordid,rs.HideTask,rs.readOnly);               
         }
         
         //SET DEFAULT ENTRY
@@ -394,6 +422,11 @@ public virtual class TimeSheetService extends BaseSettingService{
         list<OneCol> Headers=new list<OneCol>();    
         Headers=createHeader(rs,rs.StartDate,rs.endDate,rs.DateLabel,rs.readOnly);        
         rs.Header=Headers;
+        
+        System.debug('Get start date from basic setting '+rs.StartDate);
+       // if(getDuplicateTimeSheet(JSON.serialize(rs)) != null ){
+            //return getDuplicateTimeSheet(JSON.serialize(rs));
+       // }
      
         return rs;
     }
@@ -611,7 +644,10 @@ public virtual class TimeSheetService extends BaseSettingService{
             EntryTaskObjectLabel = '';
             EmployeeFieldObject = '';
             EmployeeFieldObjectLabel = '';
+            ApprovalMessage = '';
         }
+        @auraEnabled
+        public string ApprovalMessage;
         
         @auraEnabled
         public boolean reset;

@@ -124,9 +124,9 @@
     <div style="margin-top:20px">
         <template if:true={localsetting.timeEntries}>
         <center>  
-            <button class="slds-button slds-button_brand"  onclick={cancel}>Cancel</button>
-            <button class="slds-button slds-button_brand" disabled={readOnly}  onclick={save}>Save</button>
-            <lightning-button label="Submit" title="Save and Submit" onclick={submit} class="slds-m-left_x-small"></lightning-button>
+            <button class="slds-button slds-button_brand" onclick={cancel}>Cancel</button>
+            <button class="slds-button slds-button_brand" disabled={readOnly}   onclick={save}>Save</button>
+            <lightning-button label="Submit" title="Save and Submit" disabled={readOnly}  onclick={submit} class="slds-m-left_x-small"></lightning-button>
         </center>
         </template>
     </div>

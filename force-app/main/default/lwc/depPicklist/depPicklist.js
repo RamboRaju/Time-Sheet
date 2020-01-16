@@ -16,6 +16,7 @@ export default class DepPicklist extends LightningElement {
     @api leftIcon;
     @api rightIcon;
     @api readOnly;
+    @api readonlyrecord;
     @api currentrecord='';
     @api isDropdownOver = false;
     //@api isInputReadonly = true;
@@ -26,6 +27,8 @@ export default class DepPicklist extends LightningElement {
     leftIcon = '';
     readOnly = true;
    connectedCallback(){
+    if(this.readonlyrecord===true)
+    
        console.log('hello from connected coll back of dep picklist');
         this.rightIcon = 'utility:down';
         if(this.currentrecord!=='' && this.currentrecord!==undefined){

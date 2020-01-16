@@ -2,32 +2,60 @@
     <div class="slds-form-element">
         <div class="slds-combobox_container">
             <div class={getComboboxClass}>
-                <lightning-icon
+
+                <template if:true={readonlyrecord}>
+                    <lightning-icon
                     icon-name={leftIcon}
                     size="x-small"
                     alternative-text="Search icon"
                     class={getLeftIconClass}
-                ></lightning-icon>
-                <input 
-                type="text"
-                readonly={readOnly}
-                aria-autocomplete="list"
-                aria-controls="listbox"
-                autocomplete="off"
-                role="textbox"
-                id="combobox"
-                value={getInputValue}
-                class={getInputClass}
-                onclick={showDropDown}
-                style="background:white;border: 1px solid #8080802e;"
-                onmouseout={inputOnMouseOut}
-                />
-                <lightning-icon
+                    ></lightning-icon>
+                    <input 
+                    type="text"
+                    read-only="true"
+                    aria-autocomplete="list"
+                    aria-controls="listbox"
+                    autocomplete="off"
+                    role="textbox"
+                    id="combobox1"
+                    disabled
+                    value={getInputValue}
+                    class={getInputClass}
+                    onclick={showDropDown}
+                    style="background:white;border: 1px solid #8080802e;"
+                    onmouseout={inputOnMouseOut}
+                />  
+                </template>
+
+                <template if:false={readonlyrecord}>
+                    <lightning-icon
+                    icon-name={leftIcon}
+                    size="x-small"
+                    alternative-text="Search icon"
+                    class={getLeftIconClass}
+                    ></lightning-icon>
+                    <input 
+                    type="text"
+                    read-only="true"
+                    aria-autocomplete="list"
+                    aria-controls="listbox"
+                    autocomplete="off"
+                    role="textbox"
+                    id="combobox"
+                    value={getInputValue}
+                    class={getInputClass}
+                    onclick={showDropDown}
+                    style="background:white;border: 1px solid #8080802e;"
+                    onmouseout={inputOnMouseOut}
+                    />
+                    <lightning-icon
                     icon-name={rightIcon}
                     size="x-small"
                     alternative-text="Search icon"
                     class={getRightIconClass}
                 ></lightning-icon>
+                </template>
+               
                 
                 <div  id="listbox" role="listbox" onmouseleave={dropDownOnMouseOut} onmouseenter={dropDownOnMouseEnter}>
                     <ul class={getListboxClass} role="presentation" style="max-height: 148px; overflow-y: auto;">

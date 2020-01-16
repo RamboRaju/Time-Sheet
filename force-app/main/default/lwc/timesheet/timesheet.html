@@ -2,7 +2,10 @@
     <div style="background:white;padding:10px;overflow: scroll;min-height:500px">
         <template if:true={showMessage}>
                 <c-messages messages={messages} ></c-messages>
-            </template>
+        </template>
+        <template if:true={isApprovalMessage}>
+            <c-messages messages={ApprovalMessage} ></c-messages>
+       </template>
         <table>
             <tr>
                 <td style="width:25%;padding:10px">
@@ -20,7 +23,7 @@
                         <lightning-input type="text" read-only={readOnly} value={Name} label="Name" onchange={handleNameChange} ></lightning-input>   
                 </td>
                 <td style="width:29%;padding:10px">
-                    <lightning-input type="text" read-only={summaryReadOnly} value={summaryData} label="Summery" ></lightning-input>
+                    <lightning-input type="text" read-only={readOnly} value={summaryData} label="Summery" ></lightning-input>
                       
                 </td>
                 <td style="width:1%;padding:10px;">
