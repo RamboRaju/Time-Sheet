@@ -24,7 +24,7 @@ export default class TimeEntry extends LightningElement {
     @track messages;
     @track readOnly;
     @track hideTask=false;
-    @track myArray = [];
+    @track myArray = [0,0,0,0,0,0,0];
     @track isPicklist;
 
     connectedCallback() {  
@@ -71,7 +71,7 @@ export default class TimeEntry extends LightningElement {
                     this.localsetting.timeEntries=localtimeEntries;
                 }
             } 
-            console.log('***** the local file');
+           
             console.log(JSON.stringify(this.localsetting));
             let localSet = this.localsetting.timeEntries;    
             this.timeEntryRowSumation(localSet);
@@ -85,21 +85,15 @@ export default class TimeEntry extends LightningElement {
     }
 
     timeEntryRowSumation(localSet){
-        this.myArray = [];
+        this.myArray = [0,0,0,0,0,0,0];
         for(let i=0; i<localSet.length;i++){
             let rowH = localSet[i].TimeEntries;
             for(let j = 0; j< rowH.length; j++){
-                if(this.myArray.length === rowH.length){
-                    this.myArray[j] = this.myArray[j] + rowH[j].Hours;
-                }else{
-                    this.myArray.push(rowH[j].Hours);
-                }
-                
+                this.myArray[j] = this.myArray[j] + parseInt(rowH[j].Hours);          
             }
         }
 
         let detailObj=[];
-        console.log('my Array '+this.myArray)
         detailObj=this.myArray;    
         const selectEvent = new CustomEvent('summarychange', {
             detail: detailObj
@@ -149,13 +143,7 @@ export default class TimeEntry extends LightningElement {
     }
     hourChange(event){       
         let key=event.target.accessKey;
-        console.log(key);       
-        /** 
-        const selectEvent = new CustomEvent('entrychange', {
-            detail: JSON.stringify(key)
-        });
-      
-        this.dispatchEvent(selectEvent);**/
+        
         if(key!==undefined){
             let indexes=key.split('-');
             console.log(indexes);
@@ -171,6 +159,7 @@ export default class TimeEntry extends LightningElement {
                         entry=allEntr[i];
                     }
                 }
+                
                 console.log('**** ');
                 console.log(JSON.stringify(entry));
                 if(entry){
@@ -262,7 +251,7 @@ export default class TimeEntry extends LightningElement {
                 newEntry.push(allEntr[i]);
             }
         }
-        this.localsetting.timeEntries=newEntry;
+       
        // console.log(index);
         //let deletedRow= allEntr.slice(index,index+1);
         console.log(JSON.stringify(deletedRow));  
@@ -273,6 +262,10 @@ export default class TimeEntry extends LightningElement {
         .catch(error => {
             this.error = error;
         });
+
+        this.localsetting.timeEntries=newEntry;
+        let localSet = this.localsetting.timeEntries;    
+        this.timeEntryRowSumation(localSet);
     }
   
     @api 
@@ -321,7 +314,8 @@ export default class TimeEntry extends LightningElement {
                     this.localsetting.timeEntries=localtimeEntries;
                 }
             } 
-        
+            let localSet = this.localsetting.timeEntries;    
+            this.timeEntryRowSumation(localSet);
             this.ProjectApi=this.basicsetting.EntryProjectObject;
             this.ProjectLabel=this.basicsetting.EntryProjectObjectLabel;
             this.TaskApi=this.basicsetting.EntryTaskObject;
@@ -379,7 +373,7 @@ export default class TimeEntry extends LightningElement {
                 let theRow=allentry[i];
                 console.log(theRow);
                 if(theRow.ProjectId===undefined || theRow.ProjectId===''){
-                    this.messages.push('Project is Required on Row-'+(i+1));   
+                    this.messages.push('Assignment is Required on Row-'+(i+1));   
                     this.showMessage=true;              
                 }
                 if(TaskRequired===true && (theRow.TaskId==='' || theRow.TaskId===undefined)){

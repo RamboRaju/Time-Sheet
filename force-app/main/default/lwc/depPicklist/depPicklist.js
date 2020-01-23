@@ -27,7 +27,7 @@ export default class DepPicklist extends LightningElement {
     leftIcon = '';
     readOnly = true;
    connectedCallback(){
-    if(this.readonlyrecord===true)
+ 
     
        console.log('hello from connected coll back of dep picklist');
         this.rightIcon = 'utility:down';

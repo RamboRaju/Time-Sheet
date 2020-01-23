@@ -1,4 +1,6 @@
 <aura:component implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction,lightning:actionOverride" access="global" >
-	<aura:attribute name="recordId" type="String" />
+     <!-- <h1>Hello Hello </h1>      -->
+     <div class="slds-hide">I am hidden</div>
+     <aura:attribute name="recordId" type="String" />
      <c:timesheet recordId="{!v.recordId}"></c:timesheet>
 </aura:component>

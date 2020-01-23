@@ -68,10 +68,7 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
                 this.isApprovalMessage = true;
                 this.ApprovalMessage.push(result.ApprovalMessage);
             }
-            
-            console.log('Hello '+result.ApprovalMessage);
-            console.log('the final result');
-            console.log(result);
+    
             if(this.TimeSheetFields!==undefined){
                 let allFields=this.TimeSheetFields.fields;              
                 for (let attr in allFields) {
@@ -109,7 +106,7 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
             this.error = error;
         });
     }
-    
+
     @wire(getObjectInfo, { objectApiName: TimeSheet})
     wiredFields({ error, data }) {
         if (data) {                  
@@ -137,56 +134,67 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
         }
       
     }
-
-    @wire(getObjectInfo, { objectApiName: TimeEntry })
-    wiredetFields({ error, data }) {
-        console.log('Inside timeentry wire timeEntery ');
-        if (data) {                  
-            this.TimeEntryFields = data;
-            this.error = undefined;
-            if(this.basicSetting!==undefined){
-                let allFields=this.TimeEntryFields.fields;              
-                for (let attr in allFields) {
-                    if(allFields.hasOwnProperty(attr)){
-                        let theField=allFields[attr];
-                        
-                        if(theField.dataType === "Reference" && theField.custom===true && theField.apiName===this.basicSetting.EntryProjectField){
-                            this.basicSetting.EntryProjectObject=theField.referenceToInfos[0].apiName;
-                            this.basicSetting.EntryProjectObjectLabel=theField.label; 
-                            }
-                      
-                        if(theField.dataType === "Reference" && theField.custom===true && theField.apiName===this.basicSetting.EntryTaskField){
-                            this.basicSetting.EntryTaskObject=theField.referenceToInfos[0].apiName;
-                            this.basicSetting.EntryTaskObjectLabel=theField.label; 
-                        }     
-                    }
-                }
-            }
-
-        } else if (error) {          
-            this.error = error;
-            this.TimeEntryFields = undefined;
+    
+    get getNewTimeSheetButtonClass(){
+        if(this.readOnly === true){
+            return  "slds-button slds-button_brand";
+        }else{
+            return "slds-button slds-button_brand slds-hide";
         }
-      
+       
     }
 
-    @wire(getObjectInfo, { objectApiName: TimeEntry })
-    wiredEntryFields({ error, data }) {
-        
-        if (data) {                  
-            this.TimeEntryFields = data;
-            this.error = undefined;
-        } else if (error) {          
-            this.error = error;
-            this.TimeEntryFields = undefined;
+    newTimeSheet(){
+        let selectDate = this.basicSetting.StartDate;
+        let currentDate = new Date(selectDate);
+        currentDate.setDate(currentDate.getDate() + 8);
+        let month = currentDate.getMonth();
+        month++;
+        let startDate = currentDate.getFullYear()+'-'+month+'-'+currentDate.getDate();
+        console.log(typeof startDate);
+        console.log(startDate);
+        this.basicSetting.StartDate = startDate;
+        let locolBasicSetting  = this.cloneBasicStting(this.basicSetting);
+        if(locolBasicSetting.DateLabel.toLowerCase()!=='day'){    
+            this.spinner=true;
+            getUpdateBasicSetting({baseSettingStr:JSON.stringify(locolBasicSetting)})
+           .then(result => {
+               console.log(result);
+               if(result!==undefined){    
+                  let cloneResult = this.cloneUpdateBasicSetting(result); 
+                  console.log('cloneResult'); 
+                  console.log(cloneResult);        
+                  this.StartDate=cloneResult.StartDate;
+                  this.basicSetting=cloneResult;
+                  this.Name = cloneResult.Name;
+                  this.isApprovalMessage = cloneResult.ApprovalMessage;
+                  this.readOnly = cloneResult.readOnly;
+                 
+                  this.spinner=undefined;
+                //   if(actualDate!==this.StartDate){
+                //       console.log('************date changed');
+                //     this.template.querySelector('c-time-entry').baseset(cloneResult);
+                //   }
+                
+                  this.template.querySelector('c-time-entry').baseset(cloneResult);             
+               }
+           })
+           .catch(error => {
+               this.error = error;
+           });
         }
-      
+        //VALIDATE THE DATE
+     
+       
     }
 
     summaryChange(event){
         let EntryDetail =[];
         EntryDetail=event.detail;
         let total = EntryDetail.reduce((a,b) => a + b, 0);
+        if(total === 0){
+            this.Name = '';
+        }
         this.summaryData = total;
         this.summaryData = this.summaryData +'Hrs';
 
@@ -199,7 +207,6 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
     }
 
     handleNameChange(event){
-        console.log('Name change handler')
         const selection = event.target.value;
         this.Name=selection;
         this.basicSetting.Name=selection;
@@ -215,11 +222,12 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
         return basicSetting;
     }
     handleStartDateChange(event) {
-        let actualDate=this.basicSetting.StartDate;
+        //let actualDate=this.basicSetting.StartDate;
         const selection = event.target.value;
         let locolBasicSetting  = this.cloneBasicStting(this.basicSetting);
         locolBasicSetting.StartDate=selection;
-        console.log(selection);
+  
+        console.log(locolBasicSetting);
         if(locolBasicSetting.DateLabel.toLowerCase()!=='day'){    
             this.spinner=true;
             getUpdateBasicSetting({baseSettingStr:JSON.stringify(locolBasicSetting)})
@@ -232,19 +240,13 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
                   this.StartDate=cloneResult.StartDate;
                   this.basicSetting=cloneResult;
                   this.Name = cloneResult.Name;
-                  console.log('Besic setting data ');
-                  console.log(this.basicSetting);
+ 
                   this.spinner=undefined;
                 //   if(actualDate!==this.StartDate){
                 //       console.log('************date changed');
                 //     this.template.querySelector('c-time-entry').baseset(cloneResult);
-                //   }
-                console.log('cloneResult.RecordId')
-                console.log(this.basicSetting.Recordid);
-                  if(this.basicSetting.Recordid !== undefined){
-                    console.log('************date changed');
+ 
                   this.template.querySelector('c-time-entry').baseset(cloneResult);
-                }
                     
                }
            })

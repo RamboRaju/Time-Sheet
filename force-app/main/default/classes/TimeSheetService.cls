@@ -570,21 +570,21 @@ public virtual class TimeSheetService extends BaseSettingService{
         ter.key=0;
         allEntries.add(ter);
         
-        list<TimeEntry>   TimeEntries1=new list<TimeEntry>();
-        for(integer i=0;i<StartDate.daysBetween(EndDate);i++){
-            TimeEntry te=new TimeEntry();
-            te.EntryDate=StartDate.addDays(i);
-            te.Hours=1;
-            te.key='1-'+i;
-            TimeEntries1.add(te);
-        }
+        // list<TimeEntry>   TimeEntries1=new list<TimeEntry>();
+        // for(integer i=0;i<StartDate.daysBetween(EndDate);i++){
+        //     TimeEntry te=new TimeEntry();
+        //     te.EntryDate=StartDate.addDays(i);
+        //     te.Hours=1;
+        //     te.key='1-'+i;
+        //     TimeEntries1.add(te);
+        // }
         
-        TimeEntryRow ter1=new TimeEntryRow();
-        ter1.ProjectId='';
-        ter1.TaskId='';
-        ter1.TimeEntries=TimeEntries1;
-        ter1.key=1;
-        allEntries.add(ter1);
+        // TimeEntryRow ter1=new TimeEntryRow();
+        // ter1.ProjectId='';
+        // ter1.TaskId='';
+        // ter1.TimeEntries=TimeEntries1;
+        // ter1.key=1;
+        // allEntries.add(ter1);
         
         return  allEntries;
     }
