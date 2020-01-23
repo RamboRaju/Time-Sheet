@@ -14,7 +14,7 @@ export default class DepPicklist extends LightningElement {
     @api parentRecord;
     @api showhide = false;
     @api leftIcon;
-    @api rightIcon;
+    @track rightIcon;
     @api readOnly;
     @api readonlyrecord;
     @api currentrecord='';
@@ -27,9 +27,6 @@ export default class DepPicklist extends LightningElement {
     leftIcon = '';
     readOnly = true;
    connectedCallback(){
- 
-    
-       console.log('hello from connected coll back of dep picklist');
         this.rightIcon = 'utility:down';
         if(this.currentrecord!=='' && this.currentrecord!==undefined){
             apexDefault({recordId:this.currentrecord,sObjectName:this.sobjectname})
@@ -58,6 +55,7 @@ export default class DepPicklist extends LightningElement {
 
    @api
    setPicklistResults(results) {
+        console.log('from setPicklisResult')
         this.picklistResults = results.map(result => {
             // Clone and complete search result if icon is missing
             if (typeof result.icon === 'undefined') {
@@ -157,7 +155,6 @@ export default class DepPicklist extends LightningElement {
     }
 
     showDropDown(){    
-       
         this.picklistResults = [];
         picklistValue({sObjectName:this.sobjectname,parentRecord:this.parentRecord})
        .then(results => {
@@ -178,6 +175,7 @@ export default class DepPicklist extends LightningElement {
         if(this.selection !== ''){  
             return  this.selection.title;
         }else{
+            this.leftIcon = '';
             return '';
         }
     }
@@ -194,6 +192,7 @@ export default class DepPicklist extends LightningElement {
 
     @api
     resetSelection() {
+        this.leftIcon = '';
         this.selection='';
     }
 
