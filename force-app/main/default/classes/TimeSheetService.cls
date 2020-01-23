@@ -42,7 +42,7 @@ public virtual class TimeSheetService extends BaseSettingService{
         if(rs!=null){
             TimeSheet__c ts=new TimeSheet__c();
             ts.id=rs.RecordId;
-                       
+            System.debug('save time sheet method  '+rs.RecordId);         
             if(rs.RecordId!=null){
                 boolean isDateChanged=false;
                 TimeSheet__c timesheet=[select id,Start_Date__c from TimeSheet__c where id=:rs.RecordId];
@@ -55,7 +55,7 @@ public virtual class TimeSheetService extends BaseSettingService{
                 }
             }
         
-            ts.id=rs.RecordId;
+            //ts.id=rs.RecordId;
             ts.Name=rs.Name;
             ts.Employee__c=rs.SelectedEmp;
             ts.End_Date__c=rs.EndDate;
@@ -241,13 +241,22 @@ public virtual class TimeSheetService extends BaseSettingService{
     public Result getUpdateBasicSetting(string baseSettingStr){
         Result rs=(Result)JSON.deserialize(baseSettingStr, Result.class);
          if(getDuplicateTimeSheet(baseSettingStr) != null ){
+            System.debug('result of duplicate time sheet result');
             return getDuplicateTimeSheet(baseSettingStr);
         }
+        //console.log('getUpdateBasicSetting');
+        System.debug('getUpdateBasicSetting');
         if(rs!=null){
             rs.reset=false;
+            System.debug('rs.readOnly '+rs.readOnly);
             DateRanges  dr=getValidDate(rs.StartDate,rs.DateLabel,rs.WeekStartDay);
             rs.StartDate=dr.StartDate;
             rs.EndDate=dr.EndDate;
+            // Last updated for readonly
+            rs.readOnly = false;
+            rs.RecordId=null;
+            //rs.name='';
+            rs.ApprovalMessage = '';
             if(rs.RecordId!=null){
                 TimeSheet__c ts=new TimeSheet__c();
                 ts.id=rs.RecordId;
@@ -272,6 +281,9 @@ public virtual class TimeSheetService extends BaseSettingService{
             rs.Header=createHeader(rs,rs.StartDate,rs.endDate,rs.DateLabel,rs.readOnly);        
       
         }
+        System.debug('result of update time sheet result');
+        System.debug('Name '+rs.Name);
+        System.debug('time Sheet id'+rs.RecordId);
         return rs;
     }
      // open in edit mode after submit
@@ -295,7 +307,7 @@ public virtual class TimeSheetService extends BaseSettingService{
     //GET THE BASIC SETTING
     
     public Result getBasicSetting(string recordId){
-        System.debug('Hello i am in get basic setting');
+        System.debug('Hello i am in get basic setting'+recordId);
         Result rs=new Result();
         
         Setting  BaseSetting=getTimeSheetSetting();
