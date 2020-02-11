@@ -56,6 +56,7 @@ public virtual class TimeSheetService extends BaseSettingService{
             }
         
             //ts.id=rs.RecordId;
+            System.debug('rs.TotalHours '+rs.TotalHours);
             ts.Name=rs.Name;
             ts.Employee__c=rs.SelectedEmp;
             ts.End_Date__c=rs.EndDate;
@@ -66,6 +67,7 @@ public virtual class TimeSheetService extends BaseSettingService{
             ts.Start_Date__c=rs.StartDate;
             ts.Task_Required__c=rs.TaskRequired;
             ts.Week_Start_Day__c=rs.WeekStartDay;
+            ts.Total_Hours__c = rs.TotalHours;
 
             ts.Date_Only__c=rs.DateOnly;
             ts.Day_Only__c=rs.DayOnly;
@@ -81,8 +83,9 @@ public virtual class TimeSheetService extends BaseSettingService{
                     TimeEntryRow ter=rs.TimeEntries[i];
                     string ProjectId=ter.ProjectId;
                     string TaskId=ter.TaskId;
+                    string CategoryId=ter.CategoryId;
                     integer key=ter.key;
-                    if(ProjectId!=null && ProjectId.trim()!='' && (TaskId!=null || rs.TaskRequired==false)){
+                    if(ProjectId!=null && ProjectId.trim()!='' && (TaskId!=null || rs.TaskRequired==false) && CategoryId!= null && CategoryId.trim()!=''){
                         for(integer j=0;j<ter.TimeEntries.size();j++){
                             TimeEntry te=ter.TimeEntries[j];
                            
@@ -95,6 +98,7 @@ public virtual class TimeSheetService extends BaseSettingService{
                             teDm.Is_Show__c=te.isShow;
                             teDm.Date__c=te.EntryDate;
                             teDm.Hours__c=te.hours;
+                            teDm.TimeSheet_Category__c=CategoryId;
                             teDm.Assignment__c=ProjectId;
                             if(TaskId!=null && TaskId.trim()!='')
                                 teDm.Task__c=TaskId;
@@ -186,6 +190,7 @@ public virtual class TimeSheetService extends BaseSettingService{
                 TimeEntries.add(te);
             }
            
+            ter.CategoryId = '';
             ter.ProjectId='';
             ter.TaskId='';
             ter.TimeEntries=TimeEntries;
@@ -281,9 +286,7 @@ public virtual class TimeSheetService extends BaseSettingService{
             rs.Header=createHeader(rs,rs.StartDate,rs.endDate,rs.DateLabel,rs.readOnly);        
       
         }
-        System.debug('result of update time sheet result');
-        System.debug('Name '+rs.Name);
-        System.debug('time Sheet id'+rs.RecordId);
+       
         return rs;
     }
      // open in edit mode after submit
@@ -381,6 +384,7 @@ public virtual class TimeSheetService extends BaseSettingService{
         
         if(rs.Recordid!=null && rs.Recordid!=''){
             rs.StartDate=timeSheet.Start_Date__c;
+            rs.TotalHours = timeSheet.Total_Hours__c;
             rs.EndDate=timeSheet.End_Date__c;
             rs.SelectedEmp=(string)timeSheet.get(BaseSetting.EmployeeField);
             rs.DateLabel=(string)timeSheet.get('Interval__c');
@@ -414,6 +418,9 @@ public virtual class TimeSheetService extends BaseSettingService{
        
         //THE EMPLOYEE FIELD 
         rs.EmployeeField=BaseSetting.EmployeeField;
+
+         //THE Category ENTRY FIELD       
+         rs.EntryCategoryField=BaseSetting.EntryCategoryField;
         
         //THE SELECTED ENTRY FIELD       
         rs.EntryProjectField=BaseSetting.EntryProjectField;
@@ -426,9 +433,12 @@ public virtual class TimeSheetService extends BaseSettingService{
       		rs.EntryProjectObject = 'Assignment__c';
             rs.EntryProjectObjectLabel = 'Assignment';
             rs.EntryTaskObject = 'Task__c';
-            rs.EntryTaskObjectLabel = 'Task';
+            rs.EntryTaskObjectLabel = 'Type';
             rs.EmployeeFieldObject = 'User';
             rs.EmployeeFieldObjectLabel = 'User';
+            rs.EntryCategoryObject = 'Timesheet_Category__c';
+            rs.EntryCategoryObjectLabel = 'Category';
+
         
         //CREATE THE HEADERS
         list<OneCol> Headers=new list<OneCol>();    
@@ -447,19 +457,22 @@ public virtual class TimeSheetService extends BaseSettingService{
     public list<TimeEntryRow> getOldEntry(string RecordId,boolean isTask,boolean readOnly){
         
         list<TimeEntryRow>  allRows=new list<TimeEntryRow> ();
-        list<Time_Entry__c> TEs=[select id,Date__c,Hours__c,Is_Show__c,Project__c,Assignment__c,Task__c,TimeSheet__c,Row__c
+        list<Time_Entry__c> TEs=[select id,Date__c,Hours__c,Is_Show__c,Project__c,Assignment__c,Task__c,TimeSheet__c,Row__c,TimeSheet_Category__c
         from Time_Entry__c where TimeSheet__c=:RecordId order by Row__c,Date__c asc];
         
         map<integer,list<Time_Entry__c>> keyEntryMap=new map<integer,list<Time_Entry__c>>();
+        map<integer,string> keyCategoryId=new map<integer,string>();
         map<integer,string> keyProjectId=new map<integer,string>();
         map<integer,string> keyTaskId=new map<integer,string>();
         
         for(Time_Entry__c te:TEs){
-            string ProjectId=te.Assignment__c;
+            string CategoryId=te.TimeSheet_Category__c!=null?te.TimeSheet_Category__c:null;
+            string ProjectId=te.Assignment__c!=null?te.Assignment__c:null;
             string TaskId=te.Task__c!=null?te.Task__c:null;
                        
             integer key=integer.valueof(te.Row__c);
             
+            keyCategoryId.put(key,CategoryId);
             keyProjectId.put(key,ProjectId);
             keyTaskId.put(key,TaskId);
             
@@ -471,13 +484,16 @@ public virtual class TimeSheetService extends BaseSettingService{
         
     
         for(integer pStr:keyEntryMap.keyset()){
+            string CategoryId=keyCategoryId.get(pStr);
             string ProjectId=keyProjectId.get(pStr);
             string taskId=keyTaskId.get(pStr);
             
             TimeEntryRow ter=new TimeEntryRow();
             ter.key=pStr;
+            ter.CategoryId=CategoryId;
             ter.ProjectId=ProjectId;
             ter.TaskId=TaskId;
+            
             
             if(readOnly)
             	ter.readOnly=true;
@@ -508,21 +524,25 @@ public virtual class TimeSheetService extends BaseSettingService{
     public list<TimeEntryRow> getOldEntrySet(string RecordId,boolean isTask,date currentDate){
         
         list<TimeEntryRow>  allRows=new list<TimeEntryRow> ();
-        list<Time_Entry__c> TEs=[select id,Date__c,Hours__c,Is_Show__c,Project__c,Assignment__c,Task__c,TimeSheet__c,Row__c
+        list<Time_Entry__c> TEs=[select id,Date__c,Hours__c,Is_Show__c,Project__c,Assignment__c,Task__c,TimeSheet__c,Row__c,TimeSheet_Category__c
         from Time_Entry__c where TimeSheet__c=:RecordId  and TimeSheet__r.Start_Date__c=:currentDate order by Row__c,Date__c asc];
         
         map<integer,list<Time_Entry__c>> keyEntryMap=new map<integer,list<Time_Entry__c>>();
         map<integer,string> keyProjectId=new map<integer,string>();
         map<integer,string> keyTaskId=new map<integer,string>();
+        map<integer,string> keyCategoryId=new map<integer,string>();
         
         for(Time_Entry__c te:TEs){
-            string ProjectId=te.Project__c;
+            String CategoryId = te.TimeSheet_Category__c!=null?te.TimeSheet_Category__c:null;
+            string ProjectId=te.Assignment__c!=null?te.Assignment__c:null;
             string TaskId=te.Task__c!=null?te.Task__c:null;
                        
             integer key=integer.valueof(te.Row__c);
             
+            keyCategoryId.put(key,CategoryId);
             keyProjectId.put(key,ProjectId);
             keyTaskId.put(key,TaskId);
+            
             
             if(!keyEntryMap.containskey(key)){
                 keyEntryMap.put(key,new list<Time_Entry__c>());
@@ -534,11 +554,13 @@ public virtual class TimeSheetService extends BaseSettingService{
         for(integer pStr:keyEntryMap.keyset()){
             string ProjectId=keyProjectId.get(pStr);
             string taskId=keyTaskId.get(pStr);
+            string CategoryId=keyCategoryId.get(pStr);
             
             TimeEntryRow ter=new TimeEntryRow();
             ter.key=pStr;
             ter.ProjectId=ProjectId;
             ter.TaskId=TaskId;
+            ter.CategoryId = CategoryId;
             //ter.isTask
             
             list<TimeEntry> TimeEntries=new list<TimeEntry> ();
@@ -578,6 +600,7 @@ public virtual class TimeSheetService extends BaseSettingService{
         TimeEntryRow ter=new TimeEntryRow();
         ter.ProjectId='';
         ter.TaskId='';
+        ter.CategoryId = '';
         ter.TimeEntries=TimeEntries;
         ter.key=0;
         allEntries.add(ter);
@@ -613,6 +636,11 @@ public virtual class TimeSheetService extends BaseSettingService{
             Headers.add(act);
         }
         
+        OneCol ocCategory =new OneCol();
+        ocCategory.label='Category';
+        ocCategory.isDate=false;
+        Headers.add(ocCategory);
+        
         OneCol ocProject =new OneCol();
         ocProject.label='Assignment';
         ocProject.isDate=false;
@@ -620,18 +648,21 @@ public virtual class TimeSheetService extends BaseSettingService{
         
         if(rs.hidetask!=true){
             OneCol ocTask =new OneCol();
-            ocTask.label='Task';
+            ocTask.label='Type';
             ocTask.isDate=false;
             Headers.add(ocTask);
         }
+        
+       
         
       //  date startDate=StartDate;
         for(integer i=0;i<startDate.daysBetween(EndDate);i++){
             date currentDate=StartDate.addDays(i);
             OneCol oc=new OneCol();
             oc.isDate=true;
- 
-            oc.Label=string.valueof(currentDate);
+ 			System.debug('currentDate '+currentDate);
+            //oc.Label=string.valueof(currentDate);
+            oc.Label=Datetime.newInstance(currentDate.year(), currentDate.month(),currentDate.day()).format('MM/dd/yyyy');
             
             Datetime dt = DateTime.newInstance(currentDate, Time.newInstance(0, 0, 0, 0));
             String dayOfWeek=dt.format('EEEE');
@@ -650,12 +681,17 @@ public virtual class TimeSheetService extends BaseSettingService{
         
         public Result(){
             isPicklist=true;
+            TotalHours = 0.0;
             EntryProjectObject = '';
             EntryProjectObjectLabel = '';
             EntryTaskObject = '';
             EntryTaskObjectLabel = '';
             EmployeeFieldObject = '';
-            EmployeeFieldObjectLabel = '';
+            EmployeeFieldObjectLabel = '';    
+        	EntryCategoryField = '';    
+        	EntryCategoryObject = '';  
+        	EntryCategoryObjectLabel = '';
+        
             ApprovalMessage = '';
         }
         @auraEnabled
@@ -671,7 +707,15 @@ public virtual class TimeSheetService extends BaseSettingService{
         public string Recordid;
         @auraEnabled
         public string Name;
+            
         @auraEnabled
+        public string EntryCategoryField;
+        @auraEnabled
+        public string EntryCategoryObject;
+        @auraEnabled
+        public string EntryCategoryObjectLabel;
+        @auraEnabled
+        
         public string EntryProjectField;
         @auraEnabled
         public string EntryProjectObject;
@@ -713,6 +757,8 @@ public virtual class TimeSheetService extends BaseSettingService{
         @auraEnabled
         public date EndDate;
         @auraEnabled
+        public decimal TotalHours;
+        @auraEnabled
         public list<DateRanges> ValidDates;
         @auraEnabled
         public list<TimeEntryRow> timeEntries;
@@ -753,6 +799,8 @@ public virtual class TimeSheetService extends BaseSettingService{
         
         @auraEnabled
         public integer key; 
+        @auraEnabled
+        public string CategoryId;
         @auraEnabled
         public string ProjectId;
         @auraEnabled

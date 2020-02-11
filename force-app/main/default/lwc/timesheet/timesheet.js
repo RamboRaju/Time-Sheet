@@ -1,6 +1,8 @@
 /* eslint-disable no-empty */
 /* eslint-disable no-console */
 import { LightningElement, track, api, wire} from 'lwc';
+//import UserName from '@salesforce/schema/User.Name';
+import { updateRecord } from 'lightning/uiRecordApi';
 import { NavigationMixin } from 'lightning/navigation';
 import basicSetting from '@salesforce/apex/ganttController.getBasicSetting';
 //import getValidDate  from '@salesforce/apex/ganttController.getValidDate';
@@ -24,7 +26,7 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
     @track EntryProjectField;
     @track EntryTaskField;
    
-
+    @track user;
     @track EntryProjectObject;
     @track EntryTaskObject;
     @track EmployeeFieldObject;
@@ -47,6 +49,7 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
     @track isApprovalMessage;
 
     connectedCallback() {   
+        //this.user = UserName;
         if(this.recordId!==undefined && this.recordId!=='')
             this.DateReadOnly=true;
 
@@ -107,6 +110,7 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
         });
     }
 
+  
     @wire(getObjectInfo, { objectApiName: TimeSheet})
     wiredFields({ error, data }) {
         if (data) {                  
@@ -189,20 +193,35 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
     }
 
     summaryChange(event){
+        let currentDate = new Date(this.StartDate);
+        //currentDate.setDate(currentDate.getDate() + 8);
+        let month = currentDate.getMonth();
+        month++;
+        let startDate = month+'-'+currentDate.getDate()+'-'+currentDate.getFullYear();
         let EntryDetail =[];
         EntryDetail=event.detail;
         let total = EntryDetail.reduce((a,b) => a + b, 0);
         if(total === 0){
-            this.Name = '';
+            this.Name = this.user+' - '+startDate;
+            this.basicSetting.Name = this.Name;
         }
+        console.log('UserName ',this.user);
         this.summaryData = total;
-        this.summaryData = this.summaryData +'Hrs';
-
+        window.setTimeout(
+            () => { 
+                let lookups=this.template.querySelector('c-lookup').getName(this.EmpId);
+                console.log('lookups User ',lookups);
+                //let lookups1=this.template.querySelectorAll('c-lookup').getSelection();
+                //console.log('lookups User1 ',lookups1);
+             }, 7000
+        );
+        
+        //this.summaryData = this.summaryData +'Hrs';
     }
 
     handleSelectionChange(event) {
         const selection = event.target.getSelection();
-        console.log(selection);
+        console.log('my User Name',selection);
         // TODO: do something with the lookup selection
     }
 
@@ -226,7 +245,7 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
         const selection = event.target.value;
         let locolBasicSetting  = this.cloneBasicStting(this.basicSetting);
         locolBasicSetting.StartDate=selection;
-  
+        //locolBasicSetting.TotalHours = this.summaryData;
         console.log(locolBasicSetting);
         if(locolBasicSetting.DateLabel.toLowerCase()!=='day'){    
             this.spinner=true;
@@ -268,6 +287,7 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
                 localsetting.timeEntries=theentries;
             }
         } 
+       
         return localsetting;
     }
 
@@ -277,8 +297,11 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
       //  this.basicSetting.timeEntries=EntryDetail.timeEntries;
         let buttonType=EntryDetail.button;
         console.log(buttonType);
-        console.log(JSON.stringify(this.basicSetting));
+        //console.log(JSON.stringify(this.basicSetting));
         let newObj=this.cloneObject(EntryDetail.timeEntries);
+        //newObj.TotalHours = this.summaryData;
+        newObj.TotalHours = EntryDetail.tHour;
+        console.log('localsetting ',newObj);
         if(buttonType==='SAVE' || buttonType==='SUBMIT'){
             SaveTimeSheet({finalResponse:JSON.stringify(newObj),mode:buttonType})
             .then(result => {
@@ -296,16 +319,20 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
                                 actionName: 'view'
                             },
                         });
+                        updateRecord({ fields: { Id: result.RecordId } });
+                        //eval("$A.get('e.force:refreshView').fire()");
+                        //console.log('refresh ho gaya');
                     }else{
                         console.log(result.Messages);
                         this.showMessage=true;
                         this.messages=result.Messages;
-                    }
+                    }   
                 }
             })
             .catch(error => {
                 this.error = error;
             });
+            
         }
 /** 
         
@@ -353,6 +380,7 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
                 });
             }
         }
+        //eval("$A.get('e.force:refreshView').fire();");
     }
 
     saveSetting(event){
@@ -367,7 +395,9 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
         this.basicSetting.DateOnly=obj.DateOnly;
         this.basicSetting.DayOnly=obj.DayOnly;
         this.basicSetting.ShortDaywithDate=obj.ShortDaywithDate;
+        this.basicSetting.TotalHours = this.summaryData;
       //  if(recordId!==undefined && recordId!==null && recordId!==''){
+          console.log('this.basicSetting before save ',this.basicSetting);
             this.spinner=true;
             getUpdateBasicSetting({baseSettingStr:JSON.stringify(this.basicSetting)})
             .then(result => {

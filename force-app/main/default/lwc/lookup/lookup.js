@@ -103,7 +103,12 @@ export default class Lookup extends LightningElement {
 
     @api
     getSelection() {
+        //console.log('Heloo',this.selection.title);
         return this.selection;
+    }
+    @api
+    getName() { 
+         return 'Raju Yadav';
     }
     @api 
     getIndex(){

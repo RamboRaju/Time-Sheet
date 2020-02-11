@@ -14,6 +14,8 @@ export default class TimeEntry extends LightningElement {
     @api subTotalRowKey1 = 2;
  
    // @track AllEntry;
+    @track CategoryApi;
+    @track CategoryLabel;
     @track ProjectApi;
     @track ProjectLabel;
     @track TaskApi;
@@ -80,7 +82,9 @@ export default class TimeEntry extends LightningElement {
             this.ProjectApi=this.basicsetting.EntryProjectObject;
             this.ProjectLabel=this.basicsetting.EntryProjectObjectLabel;
             this.TaskApi=this.basicsetting.EntryTaskObject;
-            this.TaskLabel=this.basicsetting.EntryTaskObjectLabel;        
+            this.TaskLabel=this.basicsetting.EntryTaskObjectLabel; 
+            this.CategoryApi = this.basicsetting.EntryCategoryObject;
+            this.CategoryLabel = this.basicsetting.EntryCategoryObjectLabel;   
         }
     }
 
@@ -367,6 +371,7 @@ export default class TimeEntry extends LightningElement {
         this.showMessage=false;
         let TaskRequired=this.localsetting.TaskRequired;
         let allentry=this.localsetting.timeEntries;
+        //this.localsetting.TotalHours = 32;
         
         if(allentry.length>0){
             for(let i=0;i<allentry.length;i++){
@@ -386,7 +391,9 @@ export default class TimeEntry extends LightningElement {
         if(this.showMessage===false){
             let detailObj={};
             detailObj.timeEntries=this.localsetting.timeEntries;
+            this.timeEntryRowSumation(this.localsetting.timeEntries);
             detailObj.button='SAVE';
+            detailObj.tHour =this.myArray.reduce((a,b) => a + b, 0);
             const selectEvent = new CustomEvent('entrychange', {
                 detail: detailObj
             });

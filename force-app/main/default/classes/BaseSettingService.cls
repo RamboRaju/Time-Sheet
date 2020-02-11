@@ -33,6 +33,7 @@ public virtual class BaseSettingService {
                 BaseSetting.Disable_Approval_Process__c=sst.DisableApprovalProcess;
                 BaseSetting.Disable_Overlap__c=sst.DisableOverlap;
                 BaseSetting.EmployeeField__c=sst.EmployeeField;
+                BaseSetting.Entry_Category_Field__c =sst.EntryCategoryField;
                 BaseSetting.Entry_Project_Field__c=sst.EntryProjectField;
                 BaseSetting.Entry_Task_Field__c=sst.EntryTaskField;
                 BaseSetting.Hide_Task__c=sst.HideTask;
@@ -74,6 +75,7 @@ public virtual class BaseSettingService {
             sst.DisableApprovalProcess=BaseSetting.Disable_Approval_Process__c;
             sst.DisableOverlap=BaseSetting.Disable_Overlap__c;
             sst.EmployeeField=BaseSetting.EmployeeField__c;
+            sst.EntryCategoryField=BaseSetting.Entry_Category_Field__c;
             sst.EntryProjectField=BaseSetting.Entry_Project_Field__c;
             sst.EntryTaskField=BaseSetting.Entry_Task_Field__c;
             sst.HideTask=BaseSetting.Hide_Task__c;
@@ -96,6 +98,7 @@ public virtual class BaseSettingService {
             sst.DisableApprovalProcess=false;
             sst.DisableOverlap=true;
             sst.EmployeeField='Employee__c';
+            sst.EntryCategoryField='Timesheet_Category__c';
             sst.EntryProjectField='Assignment__c';
             sst.EntryTaskField='Task__c';
             sst.HideTask=false;
@@ -130,6 +133,8 @@ public virtual class BaseSettingService {
         public boolean DisableOverlap;
         @auraEnabled
         public string EmployeeField;
+        @auraEnabled
+        public string EntryCategoryField;
         @auraEnabled
         public string EntryProjectField;
         @auraEnabled

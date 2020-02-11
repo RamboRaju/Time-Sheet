@@ -16,14 +16,14 @@
                 </td>
                 <td style="width:25%;padding:10px">
                     <template if:true={StartDate}>
-                    <lightning-input type="date" read-only={readOnly} value={StartDate} name="input1" label={dateLabel} onchange={handleStartDateChange} ></lightning-input>
+                    <lightning-input type="date" read-only={readOnly} value={StartDate} name="input1" label={dateLabel} onchange={handleStartDateChange}  date-style="short" ></lightning-input>
                     </template>
                 </td>
                 <td style="width:20%;padding:10px">                  
                         <lightning-input type="text" read-only={readOnly} value={Name} label="Name" onchange={handleNameChange} ></lightning-input>   
                 </td>
                 <td style="width:15%;padding:10px">
-                    <lightning-input type="text" read-only={readOnly} value={summaryData} label="Summary" ></lightning-input>
+                    <lightning-input type="text" read-only={readOnly} value={summaryData} label="Total Hours" ></lightning-input>
                       
                 </td>
                 <td style="width:10%;padding-top:19px;">

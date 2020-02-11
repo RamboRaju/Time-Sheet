@@ -28,10 +28,23 @@
                                     </button>
                                 </td>              
                             </template> 
+                            <!-- Added the categeory Column Start-->
+                            <td>
+                                <template if:true={CategoryLabel}>
+                                    <template if:true ={isPicklist}>
+                                         <c-dep-picklist onpicklistselection={handlePicklistSeletion} readonlyrecord={readOnly} currentrecord={oneRow.CategoryId} lebelhiden={lebelhiden} label={CategoryLabel}  sobjectname={CategoryApi} index={oneRow.key} fieldname="CategoryId"></c-dep-picklist>     
+                                    </template>
+                                    <template if:false ={isPicklist}>
+                                        <c-lookup  onselectionchange={handleSelectionChange} readonlyrecord={readOnly} lebelhiden={lebelhiden} label={ProjectLabel} 
+                                            placeholder="Search" sobjectname={ProjectApi} currentrecord={oneRow.ProjectId} index={oneRow.key} fieldname="ProjectId"></c-lookup>
+                                    </template> 
+                                </template>
+                            </td>
+                            <!-- Added the categeory Column End-->
                             <td>
                                 <template if:true={ProjectLabel}>
                                     <template if:true ={isPicklist}>
-                                         <c-dep-picklist onpicklistselection={handlePicklistSeletion} readonlyrecord={readOnly} currentrecord={oneRow.ProjectId} lebelhiden={lebelhiden} label={ProjectLabel}  sobjectname={ProjectApi} index={oneRow.key} fieldname="ProjectId"></c-dep-picklist>     
+                                         <c-dep-picklist onpicklistselection={handlePicklistSeletion} readonlyrecord={readOnly} currentrecord={oneRow.ProjectId} parent-record={oneRow.CategoryId} lebelhiden={lebelhiden} label={ProjectLabel}  sobjectname={ProjectApi} index={oneRow.key} fieldname="ProjectId"></c-dep-picklist>     
                                     </template>
                                     <template if:false ={isPicklist}>
                                         <c-lookup  onselectionchange={handleSelectionChange} readonlyrecord={readOnly} lebelhiden={lebelhiden} label={ProjectLabel} 
@@ -70,7 +83,7 @@
                 <tr key={subTotalRowKey}>
                     <template if:false={readOnly}>
                         <template if:false={hideTask}>
-                            <td  colspan ="3" key={subTotalRowKey2}>
+                            <td  colspan ="4" key={subTotalRowKey2}>
                                 <center>
                                     <b>SUBTOTAL</b>
                                 </center>
@@ -78,7 +91,7 @@
                             </td>
                         </template>
                         <template if:true={hideTask}>
-                            <td  colspan ="2" key={subTotalRowKey2}>
+                            <td  colspan ="3" key={subTotalRowKey2}>
                                 <center>
                                     <b>SUBTOTAL</b>
                                 </center>     
@@ -88,7 +101,7 @@
                     </template>
                     <template if:true={readOnly}>
                         <template if:false={hideTask}>
-                            <td  colspan ="2" key={subTotalRowKey2}>
+                            <td  colspan ="3" key={subTotalRowKey2}>
                                 <center>
                                     <b>SUBTOTAL</b>
                                 </center>  
