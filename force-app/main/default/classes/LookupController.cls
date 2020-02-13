@@ -48,7 +48,9 @@ public class LookupController extends DescribeSObject{
         
         string fieldName='';
         if(parentRecord!=null && parentRecord.trim()!='' && parentRecord instanceof  Id){
+            System.System.debug('parentRecord '+parentRecord);
             fieldName=Utility.getParentFieldName(parentRecord,sObjectName);
+            System.System.debug('fieldName '+fieldName);
         }
         
         LookupController  lc=new LookupController();
@@ -56,24 +58,51 @@ public class LookupController extends DescribeSObject{
         string Icon=lc.getIconName(sObjectName);
         
         string query='select id,'+detail.NameField+' from '+sObjectName;
-        
-        if(fieldName!=null && fieldName.trim()!=''){
-            query+=' where '+fieldName+'=:parentRecord ';
+
+        //===============
+        //fetching task data using junction object TimeSheet_Engagement_Type__c
+        List<TimeSheet_Engagement_Type__c>  TimeSheetEngagementTypeList = new List<TimeSheet_Engagement_Type__c>();
+        TimeSheetEngagementTypeList = [Select id ,TimeSheet_Engagement__c,TimeSheet_Type__c from TimeSheet_Engagement_Type__c where TimeSheet_Engagement__c =:parentRecord]; 
+        Set<Id> TypeId = new  Set<Id>();
+        for(TimeSheet_Engagement_Type__c tet: TimeSheetEngagementTypeList){
+            TypeId.add(tet.TimeSheet_Type__c);
         }
-        
-        //query+='limit:MAX_RESULTS';
-        list<sobject> records=database.query(query);
-        if(records.size()>0){
-            for(sobject sobj:records){
-                SearchResult sr=new SearchResult();
-                sr.id=(id)sobj.get('Id');
-                sr.icon=Icon;
-                sr.title=(string)sobj.get(detail.NameField);
-                sr.subtitle=detail.Label+' '+(string)sobj.get(detail.NameField);
-                picklistResults.add(sr);
+
+        //==============
+        if(sObjectName == 'Task__c'){
+            query+= ' where id in :TypeId ';
+            System.System.debug('query '+query);
+            list<sobject> records=database.query(query);
+            if(records.size()>0){
+                for(sobject sobj:records){
+                    SearchResult sr=new SearchResult();
+                    sr.id=(id)sobj.get('Id');
+                    sr.icon=Icon;
+                    sr.title=(string)sobj.get(detail.NameField);
+                    sr.subtitle=detail.Label+' '+(string)sobj.get(detail.NameField);
+                    picklistResults.add(sr);
+                }
             }
-        }
-        
+
+        }else{
+
+            if(fieldName!=null && fieldName.trim()!=''){
+                query+=' where '+fieldName+'=:parentRecord ';
+            }
+            System.System.debug('query '+query);
+            //query+='limit:MAX_RESULTS';
+            list<sobject> records=database.query(query);
+            if(records.size()>0){
+                for(sobject sobj:records){
+                    SearchResult sr=new SearchResult();
+                    sr.id=(id)sobj.get('Id');
+                    sr.icon=Icon;
+                    sr.title=(string)sobj.get(detail.NameField);
+                    sr.subtitle=detail.Label+' '+(string)sobj.get(detail.NameField);
+                    picklistResults.add(sr);
+                }
+            }
+        }   
         return picklistResults;
     }
     

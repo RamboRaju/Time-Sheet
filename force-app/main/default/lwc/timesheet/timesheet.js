@@ -202,21 +202,10 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
         EntryDetail=event.detail;
         let total = EntryDetail.reduce((a,b) => a + b, 0);
         if(total === 0){
-            this.Name = this.user+' - '+startDate;
-            this.basicSetting.Name = this.Name;
+            this.Name = this.basicSetting.SelectedEmpName+' - '+startDate;
         }
-        console.log('UserName ',this.user);
         this.summaryData = total;
-        window.setTimeout(
-            () => { 
-                let lookups=this.template.querySelector('c-lookup').getName(this.EmpId);
-                console.log('lookups User ',lookups);
-                //let lookups1=this.template.querySelectorAll('c-lookup').getSelection();
-                //console.log('lookups User1 ',lookups1);
-             }, 7000
-        );
         
-        //this.summaryData = this.summaryData +'Hrs';
     }
 
     handleSelectionChange(event) {

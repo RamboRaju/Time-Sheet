@@ -28,7 +28,9 @@ export default class DepPicklist extends LightningElement {
     readOnly = true;
    connectedCallback(){
         this.rightIcon = 'utility:down';
+        console.log('connectedCallback');
         if(this.currentrecord!=='' && this.currentrecord!==undefined){
+            console.log('connectedCallback if');
             apexDefault({recordId:this.currentrecord,sObjectName:this.sobjectname})
             .then(results => {
                 this.setPicklistResults(results); 
@@ -42,6 +44,7 @@ export default class DepPicklist extends LightningElement {
                 this.errors.push(error);
             });
         }else{
+            console.log('connectedCallback else');
             picklistValue({sObjectName:this.sobjectname,parentRecord:this.parentRecord})
             .then(results => {  
                 this.setPicklistResults(results);
@@ -53,25 +56,42 @@ export default class DepPicklist extends LightningElement {
         }           
    }
 
+   @track existRecord;
    @api
-   setPicklistResults(results) {
-        console.log('from setPicklisResult')
-        this.picklistResults = results.map(result => {
-            // Clone and complete search result if icon is missing
-            if (typeof result.icon === 'undefined') {
-                const { id, sObjectType, title, subtitle } = result;
-                return {
-                    id,
-                    sObjectType,
-                    icon: 'standard:default',
-                    title,
-                    subtitle
-                };
-            }
-            return result;
-        });
-       
-
+   setPicklistResults(results) {   
+        if (results.some(e => e.id === this.currentrecord)) {         
+            this.picklistResults = [];
+            this.picklistResults = results.map(result => {
+                // Clone and complete search result if icon is missing
+                if (typeof result.icon === 'undefined') {
+                    const { id, sObjectType, title, subtitle } = result;
+                    return {
+                        id,
+                        sObjectType,
+                        icon: 'standard:default',
+                        title,
+                        subtitle
+                    };
+                }
+                return result;
+            });
+        }else{
+            this.picklistResults = results.map(result => {
+                // Clone and complete search result if icon is missing
+                if (typeof result.icon === 'undefined') {
+                    const { id, sObjectType, title, subtitle } = result;
+                    return {
+                        id,
+                        sObjectType,
+                        icon: 'standard:default',
+                        title,
+                        subtitle
+                    };
+                }
+                return result;
+            });
+        }
+        
     }
 
     handleResultClick(event) {
@@ -82,7 +102,6 @@ export default class DepPicklist extends LightningElement {
         else 
         this.showhide = true;
         // Save selection
-        console.log('this.picklistResults '+this.picklistResults);
         let selectedItem = this.picklistResults.filter(
             result => result.id === recordId
         );
@@ -107,7 +126,8 @@ export default class DepPicklist extends LightningElement {
     @api
     setSelection(value){     
        this.currentrecord=value;
-       console.log('********* '+this.currentrecord);
+      
+       console.log('********* setSelection'+this.currentrecord);
        if(this.currentrecord!=='' && this.currentrecord!==undefined){
         apexDefault({recordId:this.currentrecord,sObjectName:this.sobjectname})
             .then(results => {
@@ -155,7 +175,12 @@ export default class DepPicklist extends LightningElement {
     }
 
     showDropDown(){    
-        this.picklistResults = [];
+       // this.picklistResults = [];
+        console.log('from show drop down');
+        //console.log('showDropDown',this.picklistResults[0].id);
+        //let mydata = this.picklistResults;
+        //console.log('mydata ',mydata[0].id);
+       // this.existRecord = this.currentrecord;;
         picklistValue({sObjectName:this.sobjectname,parentRecord:this.parentRecord})
        .then(results => {
            this.setPicklistResults(results); 

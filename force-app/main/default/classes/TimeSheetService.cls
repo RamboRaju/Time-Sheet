@@ -379,6 +379,7 @@ public virtual class TimeSheetService extends BaseSettingService{
         
         //SELECTED EMPLOYEE      
         rs.SelectedEmp=UserInfo.getUserId();
+        rs.SelectedEmpName=UserInfo.getName();
         
         //IF EDIT THEN GET DATA FROM RECORD
         
@@ -752,6 +753,8 @@ public virtual class TimeSheetService extends BaseSettingService{
         public string DateLabel;       
         @auraEnabled
         public string SelectedEmp; 
+        @auraEnabled
+        public string SelectedEmpName;
         @auraEnabled
         public date StartDate;
         @auraEnabled
