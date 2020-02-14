@@ -1,3 +1,7 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable guard-for-in */
+/* eslint-disable no-shadow */
+/* eslint-disable no-else-return */
 /* eslint-disable no-empty */
 /* eslint-disable no-console */
 import { LightningElement, track, api, wire} from 'lwc';
@@ -290,6 +294,7 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
         let newObj=this.cloneObject(EntryDetail.timeEntries);
         //newObj.TotalHours = this.summaryData;
         newObj.TotalHours = EntryDetail.tHour;
+        newObj.Name = this.Name;
         console.log('localsetting ',newObj);
         if(buttonType==='SAVE' || buttonType==='SUBMIT'){
             SaveTimeSheet({finalResponse:JSON.stringify(newObj),mode:buttonType})

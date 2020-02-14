@@ -1,3 +1,7 @@
+/* eslint-disable no-useless-return */
+/* eslint-disable no-else-return */
+/* eslint-disable @lwc/lwc/no-async-operation */
+/* eslint-disable no-console */
 import { LightningElement, track, api } from 'lwc';
 import picklistValue from '@salesforce/apex/LookupController.getPicklistResult';
 import apexDefault from '@salesforce/apex/LookupController.getDefaultResult';
@@ -56,11 +60,9 @@ export default class DepPicklist extends LightningElement {
         }           
    }
 
-   @track existRecord;
    @api
-   setPicklistResults(results) {   
+   setPicklistResults(results) {  
         if (results.some(e => e.id === this.currentrecord)) {         
-            this.picklistResults = [];
             this.picklistResults = results.map(result => {
                 // Clone and complete search result if icon is missing
                 if (typeof result.icon === 'undefined') {
@@ -76,7 +78,8 @@ export default class DepPicklist extends LightningElement {
                 return result;
             });
         }else{
-            this.picklistResults = results.map(result => {
+     
+            let myItem1 = results.map(result => {
                 // Clone and complete search result if icon is missing
                 if (typeof result.icon === 'undefined') {
                     const { id, sObjectType, title, subtitle } = result;
@@ -90,6 +93,10 @@ export default class DepPicklist extends LightningElement {
                 }
                 return result;
             });
+            this.picklistResults = [];
+            myItem1.push(this.selection)
+            this.picklistResults = [...myItem1];
+            
         }
         
     }
@@ -175,12 +182,8 @@ export default class DepPicklist extends LightningElement {
     }
 
     showDropDown(){    
-       // this.picklistResults = [];
         console.log('from show drop down');
-        //console.log('showDropDown',this.picklistResults[0].id);
-        //let mydata = this.picklistResults;
-        //console.log('mydata ',mydata[0].id);
-       // this.existRecord = this.currentrecord;;
+       // this.picklistResults =[];
         picklistValue({sObjectName:this.sobjectname,parentRecord:this.parentRecord})
        .then(results => {
            this.setPicklistResults(results); 

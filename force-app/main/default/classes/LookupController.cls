@@ -57,7 +57,7 @@ public class LookupController extends DescribeSObject{
         sObjectDetail detail=lc.getSobjectLabel(sObjectName);
         string Icon=lc.getIconName(sObjectName);
         
-        string query='select id,'+detail.NameField+' from '+sObjectName;
+        string query='select id,Active__c,'+detail.NameField+' from '+sObjectName;
 
         //===============
         //fetching task data using junction object TimeSheet_Engagement_Type__c
@@ -70,7 +70,7 @@ public class LookupController extends DescribeSObject{
 
         //==============
         if(sObjectName == 'Task__c'){
-            query+= ' where id in :TypeId ';
+            query+= ' where Active__c = \'Active\' AND id in :TypeId ';
             System.System.debug('query '+query);
             list<sobject> records=database.query(query);
             if(records.size()>0){
@@ -87,7 +87,7 @@ public class LookupController extends DescribeSObject{
         }else{
 
             if(fieldName!=null && fieldName.trim()!=''){
-                query+=' where '+fieldName+'=:parentRecord ';
+                query+=' where Active__c = \'Active\' And '+fieldName+'=:parentRecord ';
             }
             System.System.debug('query '+query);
             //query+='limit:MAX_RESULTS';

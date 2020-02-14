@@ -2,3 +2,13 @@
     border-right: var(--lwc-borderWidthThin,1px) solid var(--lwc-colorBorder,rgb(221, 219, 218));
     border-left: var(--lwc-borderWidthThin,1px) solid var(--lwc-colorBorder,rgb(221, 219, 218));
 }
+th{
+    text-align: center;
+}
+tr>td:first-child{   
+    padding-left: 0.5rem;  
+}
+
+tr>td:last-child {
+    padding-right: 0.5rem;
+}

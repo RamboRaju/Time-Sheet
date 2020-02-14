@@ -29,7 +29,7 @@
                                 </td>              
                             </template> 
                             <!-- Added the categeory Column Start-->
-                            <td>
+                            <td style="width:11%">
                                 <template if:true={CategoryLabel}>
                                     <template if:true ={isPicklist}>
                                          <c-dep-picklist onpicklistselection={handlePicklistSeletion} readonlyrecord={readOnly} currentrecord={oneRow.CategoryId} lebelhiden={lebelhiden} label={CategoryLabel}  sobjectname={CategoryApi} index={oneRow.key} fieldname="CategoryId"></c-dep-picklist>     
@@ -41,7 +41,7 @@
                                 </template>
                             </td>
                             <!-- Added the categeory Column End-->
-                            <td>
+                            <td style="width:14%">
                                 <template if:true={ProjectLabel}>
                                     <template if:true ={isPicklist}>
                                          <c-dep-picklist onpicklistselection={handlePicklistSeletion} readonlyrecord={readOnly} currentrecord={oneRow.ProjectId} parent-record={oneRow.CategoryId} lebelhiden={lebelhiden} label={ProjectLabel}  sobjectname={ProjectApi} index={oneRow.key} fieldname="ProjectId"></c-dep-picklist>     
@@ -54,7 +54,7 @@
                             </td>
                             <template if:false={hideTask}>
                                 <template if:true={oneRow.isTask}>
-                                    <td>
+                                    <td style="width:11%">
                                         <template if:true={TaskLabel}>
                                             <template if:true ={isPicklist}>
                                                 <c-dep-picklist onpicklistselection={handlePicklistSeletion} readonlyrecord={readOnly} currentrecord={oneRow.TaskId} parent-record={oneRow.ProjectId} sobjectname={TaskApi} index={oneRow.key} fieldname="TaskId"></c-dep-picklist>

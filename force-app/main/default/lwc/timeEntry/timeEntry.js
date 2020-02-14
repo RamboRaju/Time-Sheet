@@ -377,12 +377,16 @@ export default class TimeEntry extends LightningElement {
             for(let i=0;i<allentry.length;i++){
                 let theRow=allentry[i];
                 console.log(theRow);
+                if(theRow.CategoryId===undefined || theRow.CategoryId===''){
+                    this.messages.push('Category is Required on Row-'+(i+1));   
+                    this.showMessage=true;              
+                }
                 if(theRow.ProjectId===undefined || theRow.ProjectId===''){
                     this.messages.push('Assignment is Required on Row-'+(i+1));   
                     this.showMessage=true;              
                 }
                 if(TaskRequired===true && (theRow.TaskId==='' || theRow.TaskId===undefined)){
-                    this.messages.push('Task is Required on Row-'+(i+1));
+                    this.messages.push('Type is Required on Row-'+(i+1));
                     this.showMessage=true;
                 }
             }
