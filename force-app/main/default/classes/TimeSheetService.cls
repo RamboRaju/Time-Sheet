@@ -182,7 +182,9 @@ public virtual class TimeSheetService extends BaseSettingService{
             }
             max++;
             list<TimeEntry>   TimeEntries=new list<TimeEntry>();
-            for(integer i=0;i<rs.StartDate.daysBetween(rs.EndDate);i++){
+            //change date daysBetween
+            //rs.StartDate.daysBetween(rs.EndDate)
+            for(integer i=0;i<7;i++){
                 TimeEntry te=new TimeEntry();
                 te.EntryDate=rs.StartDate.addDays(i);
                 te.Hours=0;
@@ -218,8 +220,12 @@ public virtual class TimeSheetService extends BaseSettingService{
         if(Interval.tolowercase()=='week'){          
             date weekStart=Utility.StartOfWeek(WeekStartDay,CurrentDate);
             dr.StartDate=weekStart;
-            dr.EndDate=weekStart.adddays(7);    
+            //change for date
+            System.debug('weekStart '+weekStart);
+            System.debug('weeweekStart.adddays(6) '+weekStart.adddays(6));
+            dr.EndDate=weekStart.adddays(6);    
         }
+
         return dr;
     }
     
@@ -228,8 +234,14 @@ public virtual class TimeSheetService extends BaseSettingService{
         Result rs1 = new Result();
         Result rs=(Result)JSON.deserialize(baseSettingStr, Result.class);
         System.debug('Result==== '+rs.StartDate);
+        
+        System.debug('UserId==== '+rs.SelectedEmp);
+        System.debug('UserInfo.getUserId()==== '+UserInfo.getUserId());
+
         List<TimeSheet__c> timeSheetList = new List<TimeSheet__c>();
-        timeSheetList = [Select id, name,Start_Date__c,End_Date__c from TimeSheet__c where Start_Date__c  <=:rs.StartDate And End_Date__c  >= :rs.StartDate limit 1];
+        timeSheetList = [Select id, name,Start_Date__c,End_Date__c,Employee__c from TimeSheet__c where 
+        (Start_Date__c  <=:rs.StartDate And End_Date__c  >= :rs.StartDate) AND
+        Employee__c=:UserInfo.getUserId()  limit 1];
         System.debug('timeSheetList '+timeSheetList);
         if(timeSheetList.size() > 0){
             rs1 = getBasicSetting(timeSheetList[0].id);
@@ -257,6 +269,12 @@ public virtual class TimeSheetService extends BaseSettingService{
             DateRanges  dr=getValidDate(rs.StartDate,rs.DateLabel,rs.WeekStartDay);
             rs.StartDate=dr.StartDate;
             rs.EndDate=dr.EndDate;
+            System.debug('UserInfo.getUserId() '+UserInfo.getUserId());
+            System.debug('UserInfo.getName() '+UserInfo.getName());
+            System.debug('rs.SelectedEmp '+rs.SelectedEmp);
+            System.debug('rs.SelectedEmpName '+rs.SelectedEmpName);
+            //rs.SelectedEmp=UserInfo.getUserId();
+            //rs.SelectedEmpName=UserInfo.getName();
             // Last updated for readonly
             rs.readOnly = false;
             rs.RecordId=null;
@@ -280,13 +298,19 @@ public virtual class TimeSheetService extends BaseSettingService{
                     rs.reset=true;             
             }
             
-            if(rs.RecordId==null || rs.timeEntries.size()==0)
-                rs.timeEntries=CreateDefaultEntry(rs.StartDate,rs.EndDate);     
+            if(rs.RecordId==null || rs.timeEntries.size()==0){
+                rs.timeEntries=CreateDefaultEntry(rs.StartDate,rs.EndDate); 
+                rs.SelectedEmp=UserInfo.getUserId();
+            	rs.SelectedEmpName=UserInfo.getName();
+            }
+                   
            
-            rs.Header=createHeader(rs,rs.StartDate,rs.endDate,rs.DateLabel,rs.readOnly);        
+            rs.Header=createHeader(rs,rs.StartDate,rs.endDate,rs.DateLabel,rs.readOnly); 
+            
       
         }
-       
+        System.debug('rs.SelectedEmp at the End '+rs.SelectedEmp);
+        System.debug('rs.SelectedEmpName at the End '+rs.SelectedEmpName);
         return rs;
     }
      // open in edit mode after submit
@@ -321,7 +345,8 @@ public virtual class TimeSheetService extends BaseSettingService{
         if(BaseSetting.DefaultInterval=='WEEK'){          
             date weekStart=Utility.StartOfWeek(BaseSetting.WeekStartDay,date.today());
             rs.StartDate=weekStart;
-            rs.EndDate=weekStart.adddays(7);    
+            //change 6 from 7
+            rs.EndDate=weekStart.adddays(6);    
         }
         
         //if recordidnull 
@@ -329,7 +354,9 @@ public virtual class TimeSheetService extends BaseSettingService{
         if(recordId==null){
             List<TimeSheet__c> timeSheetList = new List<TimeSheet__c>();
             System.debug('rs.StartDate '+rs.StartDate);
-            timeSheetList = [Select id, name,Start_Date__c,End_Date__c from TimeSheet__c where Start_Date__c=:rs.StartDate And End_Date__c  >= :rs.EndDate limit 1];
+            timeSheetList = [Select id, name,Start_Date__c,End_Date__c from TimeSheet__c where 
+                             (Start_Date__c=:rs.StartDate And End_Date__c  >= :rs.EndDate)
+                             AND Employee__c=:UserInfo.getUserId()limit 1];
             System.debug('timeSheetList '+timeSheetList);
             if(timeSheetList.size() > 0){
                 rs.Recordid = timeSheetList[0].id;
@@ -590,7 +617,8 @@ public virtual class TimeSheetService extends BaseSettingService{
         list<TimeEntryRow> allEntries=new list<TimeEntryRow>();
         
         list<TimeEntry>  TimeEntries=new list<TimeEntry>();
-        for(integer i=0;i<StartDate.daysBetween(EndDate);i++){
+        //StartDate.daysBetween(EndDate)
+        for(integer i=0;i<7;i++){
             TimeEntry te=new TimeEntry();
             te.EntryDate=StartDate.addDays(i);
             te.Hours=0;
@@ -657,7 +685,8 @@ public virtual class TimeSheetService extends BaseSettingService{
        
         
       //  date startDate=StartDate;
-        for(integer i=0;i<startDate.daysBetween(EndDate);i++){
+      //tartDate.daysBetween(EndDate)
+        for(integer i=0;i<7;i++){
             date currentDate=StartDate.addDays(i);
             OneCol oc=new OneCol();
             oc.isDate=true;

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable radix */
 /* eslint-disable guard-for-in */
 /* eslint-disable no-console */
@@ -354,10 +355,11 @@ export default class TimeEntry extends LightningElement {
                     if(fieldName==='ProjectId'){
                       
                         lookups[i].setSelection(selectedItem[0].ProjectId);
-                    }
-                    else{
+                    }else if(fieldName==='TaskId'){
                         
                         lookups[i].setSelection(selectedItem[0].TaskId);
+                    }else{
+                        lookups[i].setSelection(selectedItem[0].CategoryId);
                     }
                 
                 }     

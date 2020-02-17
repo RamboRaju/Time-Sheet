@@ -8,15 +8,23 @@
        </template>
         <table>
             <tr>
-                <td style="width:25%;padding:10px">
-                    <template if:true={EmployeeFieldObject}>
-                        <c-lookup  onselectionchange={handleSelectionChange} readonlyrecord={EmployeeReadOnly} label="Employee" 
-                        placeholder="Search Employee" sobjectname={EmployeeFieldObject} currentrecord={EmpId}></c-lookup>
+                <td style="width:25%;padding:10px">  
+                    <template  if:true={before}>
+                        <template if:true={EmployeeFieldObject}>
+                            <c-lookup  onselectionchange={handleSelectionChange} readonlyrecord={EmployeeReadOnly} label="Employee" 
+                            placeholder="Search Employee" sobjectname={EmployeeFieldObject} currentrecord={EmpId}></c-lookup>
+                        </template>
                     </template>
+                    <template  if:true={after}>
+                        <template if:true={EmployeeFieldObject}>
+                            <c-lookup  onselectionchange={handleSelectionChange} readonlyrecord={EmployeeReadOnly} label="Employee" 
+                            placeholder="Search Employee" sobjectname={EmployeeFieldObject} currentrecord={EmpId}></c-lookup>
+                        </template>
+                    </template>            
                 </td>
                 <td style="width:25%;padding:10px">
                     <template if:true={StartDate}>
-                    <lightning-input type="date" read-only={readOnly} value={StartDate} name="input1" label={dateLabel} onchange={handleStartDateChange}  date-style="short" ></lightning-input>
+                    <lightning-input type="date" read-only={readOnly} value={EndDate} name="input1" label={dateLabel} onchange={handleStartDateChange}  date-style="short" ></lightning-input>
                     </template>
                 </td>
                 <td style="width:20%;padding:10px">                  

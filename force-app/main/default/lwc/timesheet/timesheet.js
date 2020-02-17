@@ -26,6 +26,9 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
     @track Name;
     @track summaryData = 0;
 
+    @track before = true;
+    @track after = false;
+
     @track EmployeeField;
     @track EntryProjectField;
     @track EntryTaskField;
@@ -54,6 +57,7 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
 
     connectedCallback() {   
         //this.user = UserName;
+        console.log('connectedCallback timesheet');
         if(this.recordId!==undefined && this.recordId!=='')
             this.DateReadOnly=true;
 
@@ -63,6 +67,7 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
             this.readOnly=result.readOnly;
             this.basicSetting = result;
             this.StartDate=result.StartDate;
+            this.EndDate =result.EndDate;
             this.EmpId=result.SelectedEmp;
             this.Name=result.Name;
             this.dateLabel=result.DateLabel;
@@ -173,6 +178,7 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
                   console.log('cloneResult'); 
                   console.log(cloneResult);        
                   this.StartDate=cloneResult.StartDate;
+                  this.EndDate = cloneResult.EndDate;
                   this.basicSetting=cloneResult;
                   this.Name = cloneResult.Name;
                   this.isApprovalMessage = cloneResult.ApprovalMessage;
@@ -197,8 +203,9 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
     }
 
     summaryChange(event){
-        let currentDate = new Date(this.StartDate);
+        let currentDate = new Date(this.EndDate);
         //currentDate.setDate(currentDate.getDate() + 8);
+        console.log('currentDate '+currentDate);
         let month = currentDate.getMonth();
         month++;
         let startDate = month+'-'+currentDate.getDate()+'-'+currentDate.getFullYear();
@@ -248,10 +255,17 @@ export default class Timesheet extends  NavigationMixin(LightningElement) {
                if(result!==undefined){    
                   let cloneResult = this.cloneUpdateBasicSetting(result); 
                   console.log('cloneResult'); 
-                  console.log(cloneResult);        
+                  console.log(cloneResult);   
+                  console.log('this.EmpId beforce ',this.EmpId);   
                   this.StartDate=cloneResult.StartDate;
+                  this.EndDate = cloneResult.EndDate;
+                  this.EmpId = cloneResult.SelectedEmp;
+                  this.before = false;
+                  this.after = true;
+                  console.log('this.EmpId after ',this.EmpId);  
                   this.basicSetting=cloneResult;
                   this.Name = cloneResult.Name;
+                 
  
                   this.spinner=undefined;
                 //   if(actualDate!==this.StartDate){

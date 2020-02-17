@@ -32,6 +32,7 @@ export default class Lookup extends LightningElement {
   
     //SET DEFAULT RECORD FOR VIEW
     connectedCallback() {
+        console.log('connectedCallback lookup');
         if(this.readonlyrecord===true)
             this.RemoveClose=true;
 

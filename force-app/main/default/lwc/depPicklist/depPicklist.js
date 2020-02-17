@@ -200,7 +200,7 @@ export default class DepPicklist extends LightningElement {
     }
 
     get getInputValue() {
-        if(this.selection !== ''){  
+        if(this.selection !== '' && this.selection!==undefined){  
             return  this.selection.title;
         }else{
             this.leftIcon = '';

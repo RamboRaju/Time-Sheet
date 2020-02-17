@@ -57,7 +57,7 @@ public class LookupController extends DescribeSObject{
         sObjectDetail detail=lc.getSobjectLabel(sObjectName);
         string Icon=lc.getIconName(sObjectName);
         
-        string query='select id,Active__c,'+detail.NameField+' from '+sObjectName;
+        string query='select id,Active__c,'+detail.NameField+' from '+sObjectName + ' where Active__c = \'Active\' ';
 
         //===============
         //fetching task data using junction object TimeSheet_Engagement_Type__c
@@ -70,7 +70,8 @@ public class LookupController extends DescribeSObject{
 
         //==============
         if(sObjectName == 'Task__c'){
-            query+= ' where Active__c = \'Active\' AND id in :TypeId ';
+            query+= ' and id in :TypeId ';
+            query+= ' ORDER BY Name DESC';
             System.System.debug('query '+query);
             list<sobject> records=database.query(query);
             if(records.size()>0){
@@ -87,8 +88,9 @@ public class LookupController extends DescribeSObject{
         }else{
 
             if(fieldName!=null && fieldName.trim()!=''){
-                query+=' where Active__c = \'Active\' And '+fieldName+'=:parentRecord ';
+                query+=' and '+fieldName+'=:parentRecord ';
             }
+            query+= ' ORDER BY Name DESC';
             System.System.debug('query '+query);
             //query+='limit:MAX_RESULTS';
             list<sobject> records=database.query(query);
@@ -113,8 +115,9 @@ public class LookupController extends DescribeSObject{
         LookupController  lc=new LookupController();
         sObjectDetail detail=lc.getSobjectLabel(sObjectName);
         string Icon=lc.getIconName(sObjectName);
-        
+        System.debug('recordId '+recordId);
         string query='select id,'+detail.NameField+' from '+sObjectName+' where  id=:recordId '+'limit:MAX_RESULTS';
+        System.debug('query '+query);
         list<sobject> records=database.query(query);
         if(records.size()>0){
             for(sobject sobj:records){
@@ -126,7 +129,7 @@ public class LookupController extends DescribeSObject{
                 SearchResults.add(sr);
             }
         }
-        
+        System.debug('SearchResults '+SearchResults);
         return SearchResults;
     }
 
