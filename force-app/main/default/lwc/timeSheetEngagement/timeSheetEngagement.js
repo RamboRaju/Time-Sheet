@@ -2,17 +2,18 @@
 import { LightningElement, api, track } from 'lwc';
 import engagementType from '@salesforce/apex/TimeSheetEngagement.getEngagementType';
 import linkedEngagementype from '@salesforce/apex/TimeSheetEngagement.getLinkedEngagementype';
+import updateEngagement from '@salesforce/apex/TimeSheetEngagement.updateEngagement';
 
 export default class TimeSheetEngagement extends LightningElement {
     @api recordId;
     @track EngagementType=[];
     @track errors = [];
     @track LinkedEngagementType=[];
-    //console.log();
+    @track isTrue = true;
+
 
     connectedCallback() {
         
-
         if(this.recordId!=='' && this.recordId!==undefined){
             engagementType({recordId:this.recordId})
             .then(results => {
@@ -29,17 +30,13 @@ export default class TimeSheetEngagement extends LightningElement {
     
 
     @track openmodel = false;
-    // openmodal() {
-    //     this.openmodel = true
-    // }
+   
     showType(){
-        console.log('Hello Edit');
+ 
         if(this.recordId!=='' && this.recordId!==undefined){
             linkedEngagementype({recordId:this.recordId})
             .then(results => {
-                console.log('results ',results);
                 this.LinkedEngagementType = results;
-        
             })
             .catch(error => {
                 // TODO: handle error
@@ -51,9 +48,34 @@ export default class TimeSheetEngagement extends LightningElement {
     closeModal() {
         this.openmodel = false
     } 
+
+    
+    linkedHandle(event){
+        let linkedEngagementypeClone = { ...this.LinkedEngagementType};
+        const selection = event.target.parentNode.dataset.rowindex;
+        linkedEngagementypeClone.LinkedTimeSheetTypeList[selection].isCheck =linkedEngagementypeClone.LinkedTimeSheetTypeList[selection].isCheck === true ? false : true;
+        this.LinkedEngagementType = linkedEngagementypeClone;
+          
+    }
+
+    unlinkedHandle(event){
+        let linkedEngagementypeClone = { ...this.LinkedEngagementType};
+        const selection = event.target.parentNode.dataset.rowindex;
+        linkedEngagementypeClone.UnlinkedTimeSheetTypeList[selection].isCheck =linkedEngagementypeClone.UnlinkedTimeSheetTypeList[selection].isCheck === true ? false : true;
+        this.LinkedEngagementType = linkedEngagementypeClone;
+    }
     saveMethod() {
-      
-        console.log('save method invoked');
+        if(this.recordId!=='' && this.recordId!==undefined){
+            updateEngagement({updatedValue:JSON.stringify(this.LinkedEngagementType),recordId:this.recordId})
+            .then(results => {
+                this.EngagementType = results;
+            })
+            .catch(error => {
+                // TODO: handle error
+                this.errors.push(error);
+
+            });
+        }
         this.closeModal();
     }
     

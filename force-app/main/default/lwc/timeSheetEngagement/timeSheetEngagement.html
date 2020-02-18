@@ -4,13 +4,13 @@
         <thead>
           <tr class="slds-line-height_reset">
             <th class="" scope="col">
-              <div class="slds-truncate" title="Opportunity Name">S.N.</div>
+              <div class="slds-truncate" title="S.N.">S.N.</div>
             </th>
             <th class="" scope="col">
-              <div class="slds-truncate" title="Account Name"> Type ID</div>
+              <div class="slds-truncate" title="Type ID"> Type ID</div>
             </th>
             <th class="" scope="col">
-              <div class="slds-truncate" title="Close Date">Type </div>
+              <div class="slds-truncate" title="Type">Type </div>
             </th>
           </tr>
         </thead>
@@ -18,19 +18,26 @@
           <template for:each={EngagementType} for:item="item" for:index="index">
                 <tr class="slds-hint-parent" key={item}>  
                     <td data-label="Account Name">
-                    <div class="slds-truncate" title="Cloudhub">{index}</div>
+                    <div class="slds-truncate" title="index">{index}</div>
                     </td>
                     <td data-label="Close Date">
-                    <div class="slds-truncate" title="4/14/2015"> {item.Name}</div>
+                    <div class="slds-truncate" title="Name"> {item.Name}</div>
                     </td>
                     <td data-label="Prospecting">
-                    <div class="slds-truncate" title="Prospecting">{item.TimeSheet_Type__r.Name}</div>
+                    <div class="slds-truncate" title="TimeSheetTypeName">{item.TimeSheet_Type__r.Name}</div>
                     </td>
                </tr>
           </template>
         </tbody>
       </table>
-      <button class="slds-button slds-button_brand" onclick={showType}>EDIT</button>
+
+      <div style="margin-top:20px"> 
+        <center>  
+          <button class="slds-button slds-button_brand" onclick={showType}>EDIT</button>
+        </center> 
+    </div>
+      
+
       <template if:true={openmodel}>
         <div class="demo-only" style="height: 640px;">
             <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-01" aria-modal="true" aria-describedby="modal-content-id-1" class="slds-modal slds-fade-in-open">
@@ -41,69 +48,76 @@
                             </lightning-icon>
                             <span class="slds-assistive-text">Close</span>
                         </button>
-                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Modal Box Example</h2>
+                        <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">TimeSheet Type </h2>
                     </header>
-                    <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
-                      <thead>
-                        <tr class="slds-line-height_reset">
-                          <th class="" scope="col">
-                            <div class="slds-truncate" title="Opportunity Name">S.N.</div>
-                          </th>
-                          <th class="" scope="col">
-                            <div class="slds-truncate" title="Account Name"> IsCheck</div>
-                          </th>
-                          <th class="" scope="col">
-                            <div class="slds-truncate" title="Close Date">Type </div>
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <template for:each={LinkedEngagementType.LinkedTimeSheetTypeList} for:item="item" for:index="index">
-                              <tr class="slds-hint-parent" key={item}>  
-                                  <td data-label="Account Name">
-                                  <div class="slds-truncate" title="Cloudhub">{index}</div>
-                                  </td>
-                                  <td data-label="Close Date">
-                                  <div class="slds-truncate" title="4/14/2015"> {item.isCheck}</div>
-                                  </td>
-                                  <td data-label="Prospecting">
-                                  <div class="slds-truncate" title="Prospecting">{item.type}</div>
-                                  </td>
-                             </tr>
-                        </template>
-                      </tbody>
-                    </table>
-                    <h1>Not linked</h1>
-                    <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
-                      <thead>
-                        <tr class="slds-line-height_reset">
-                          <th class="" scope="col">
-                            <div class="slds-truncate" title="Opportunity Name">S.N.</div>
-                          </th>
-                          <th class="" scope="col">
-                            <div class="slds-truncate" title="Account Name"> IsCheck</div>
-                          </th>
-                          <th class="" scope="col">
-                            <div class="slds-truncate" title="Close Date">Type </div>
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <template for:each={LinkedEngagementType.UnlinkedTimeSheetTypeList} for:item="item" for:index="index">
-                              <tr class="slds-hint-parent" key={item}>  
-                                  <td data-label="Account Name">
-                                  <div class="slds-truncate" title="Cloudhub">{index}</div>
-                                  </td>
-                                  <td data-label="Close Date">
-                                  <div class="slds-truncate" title="4/14/2015"> {item.isCheck}</div>
-                                  </td>
-                                  <td data-label="Prospecting">
-                                  <div class="slds-truncate" title="Prospecting">{item.type}</div>
-                                  </td>
-                             </tr>
-                        </template>
-                      </tbody>
-                    </table>
+                      <template if:true={isTrue}>
+                        <h1 style=" background: white; "><b><center>connected TimeSheet type</center></b> </h1>
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
+                          <thead>
+                            <tr class="slds-line-height_reset">
+                              <th class="" scope="col">
+                                <div class="slds-truncate" title="S.N.">S.N.</div>
+                              </th>
+                              <th class="" scope="col">
+                                <div class="slds-truncate" title="IsCheck"> IsCheck</div>
+                              </th>
+                              <th class="" scope="col">
+                                <div class="slds-truncate" title="Type">Type </div>
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <template for:each={LinkedEngagementType.LinkedTimeSheetTypeList} for:item="item" for:index="index">
+                                  <tr class="slds-hint-parent" key={item}>  
+                                      <td data-label="index">
+                                      <div class="slds-truncate" title="index">{index}</div>
+                                      </td>
+                                      <td data-label="checkBox">
+                                      <div class="slds-truncate" title="4/14/2015" data-rowindex={index}>
+                                        <lightning-input type="checkbox" label="" name="input1" checked={item.isCheck} onchange={linkedHandle}></lightning-input>
+                                      </div>
+                                      </td>
+                                      <td data-label="type">
+                                      <div class="slds-truncate" title="type">{item.type}</div>
+                                      </td>
+                                 </tr>
+                            </template>
+                          </tbody>
+                        </table>
+                        <h1 style=" background: white; "><b><center>Not connected TimeSheet type</center></b></h1>
+                        <table class="slds-table slds-table_cell-buffer slds-table_bordered slds-table_col-bordered">
+                          <thead>
+                            <tr class="slds-line-height_reset">
+                              <th class="" scope="col">
+                                <div class="slds-truncate" title="S.N.">S.N.</div>
+                              </th>
+                              <th class="" scope="col">
+                                <div class="slds-truncate" title="IsCheck"> IsCheck</div>
+                              </th>
+                              <th class="" scope="col">
+                                <div class="slds-truncate" title="Type">Type </div>
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <template for:each={LinkedEngagementType.UnlinkedTimeSheetTypeList} for:item="item" for:index="index">
+                                  <tr class="slds-hint-parent" key={item}>  
+                                      <td data-label="index">
+                                      <div class="slds-truncate" title="index">{index}</div>
+                                      </td>
+                                      <td data-label="checkbox">
+                                      <div class="slds-truncate" title="4/14/2015" data-rowindex={index}>
+                                        <lightning-input type="checkbox" label="" name="input1" checked={item.isCheck} onchange={unlinkedHandle}>></lightning-input>
+                                        </div>
+                                      </td>
+                                      <td data-label="type">
+                                      <div class="slds-truncate" title="type">{item.type}</div>
+                                      </td>
+                                 </tr>
+                            </template>
+                          </tbody>
+                        </table>
+                      </template>
                     <footer class="slds-modal__footer">
                         <lightning-button label="Cancel" variant="neutral" onclick={closeModal}></lightning-button>&nbsp;&nbsp;&nbsp;&nbsp;
                         <lightning-button label="Save" variant="brand" onclick={saveMethod}></lightning-button>
