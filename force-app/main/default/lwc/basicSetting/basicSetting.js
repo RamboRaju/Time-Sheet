@@ -14,7 +14,8 @@ export default class BasicSetting extends LightningElement {
     @track dmlerror;
     @track savedSuccess;
     @track savedError;
-    @track ShowSpinner=false;;
+    @track ShowSpinner=false;
+  
 
     connectedCallback() {
         this.BasicSetting = this.basesetting.constructor();

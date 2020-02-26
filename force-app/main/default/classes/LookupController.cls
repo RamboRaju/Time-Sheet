@@ -56,6 +56,8 @@ public class LookupController extends DescribeSObject{
         LookupController  lc=new LookupController();
         sObjectDetail detail=lc.getSobjectLabel(sObjectName);
         string Icon=lc.getIconName(sObjectName);
+        System.debug('sObjectName  '+sObjectName);
+        System.debug('Icon  '+Icon);
         
         string query='select id,Active__c,'+detail.NameField+' from '+sObjectName + ' where Active__c = \'Active\' ';
 

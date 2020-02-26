@@ -48,6 +48,10 @@ public virtual class BaseSettingService {
                 BaseSetting.Day_Only__c=sst.DayOnly;
                 BaseSetting.Short_Day_with_Date__c=sst.ShortDaywithDate;
                 
+                BaseSetting.AssignmentIcon__c=sst.AssignmentIcon;
+                BaseSetting.CategoryIcon__c=sst.CategoryIcon;
+                BaseSetting.TypeIcon__c =sst.TypeIcon;
+               
                 if(BaseSetting.Id!=null)
                     update BaseSetting;
                 else 
@@ -88,10 +92,17 @@ public virtual class BaseSettingService {
             sst.DateOnly=BaseSetting.Date_Only__c;
             sst.DayOnly=BaseSetting.Day_Only__c;
             sst.ShortDaywithDate=BaseSetting.Short_Day_with_Date__c;
+            
+            sst.AssignmentIcon=BaseSetting.AssignmentIcon__c;
+            sst.CategoryIcon =BaseSetting.CategoryIcon__c;
+            sst.TypeIcon =BaseSetting.TypeIcon__c;
         }else{
-           
+            DescribeSObject thisDescribeSObject = new DescribeSObject();
             //SET DEFAULT VALUE
-     
+     		sst.AssignmentIcon = thisDescribeSObject.getIconName('Assignment__c');
+            sst.CategoryIcon = thisDescribeSObject.getIconName('Timesheet_Category__c');
+            sst.TypeIcon = thisDescribeSObject.getIconName('Task__c');
+                
             sst.CustomHoilday=false;         
             sst.CustomLeave=false;
             sst.DefaultInterval='WEEK';           
@@ -153,6 +164,12 @@ public virtual class BaseSettingService {
         public boolean TaskRequired;
         @auraEnabled
         public string WeekStartDay;
+        @auraEnabled
+        public string AssignmentIcon;
+        @auraEnabled
+        public string CategoryIcon;
+        @auraEnabled
+        public string TypeIcon;
         
         @auraEnabled
         public boolean DateOnly;
